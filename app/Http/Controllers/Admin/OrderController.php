@@ -10,6 +10,7 @@ use App\Models\OrderItem;
 use App\Models\OrderSale;
 use App\Models\Product;
 use App\Models\Service;
+use DB;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -19,7 +20,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::paginate(config('admin.pagination'));
+        $orders = Order::where('status', 2)->paginate(config('admin.pagination'));
         return view('admin.orders.index', compact('orders'));
     }
 
@@ -45,124 +46,283 @@ class OrderController extends Controller
         return view('admin.orders.create', compact('products', 'clients', 'tabels', 'rooms', 'active_tables', 'active_rooms', 'order_number'));
     }
 
+    public function store(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            if ($request->table_id !== null && $request->has('row_product_id')) {
+                $order_exite = Order::where('service_id', $request->table_id)->where('status', 1)->first();
+
+                if ($order_exite == null) {
+                    // Create new order if not found service
+                    $order = new Order();
+                    $order->number = $request->order_number;
+                    $order->user_id = auth()->user()->id;
+                    $order->client_id = $request->client_id;
+                    $order->service_id = $request->table_id;
+                    $order->discount = $request->discount;
+                    $order->total_price = $request->total_price ?? $this->calculateTotalPrice($request->row_product_id);
+                    $order->type = 1;
+                    $order->status = 1;
+                    $order->save();
+
+                    $this->saveOrderItems($request, $order->id);
+                } else {
+                    $this->updateOrderItems($request, $order_exite);
+                }
+            } elseif ($request->room_id !== null) {
+                $order_exite = Order::where('service_id', $request->room_id)->where('status', 1)->first();
+
+                if ($order_exite == null) {
+                    // Create new order if not found service
+                    $order = new Order();
+                    $order->number = $request->order_number;
+                    $order->user_id = auth()->user()->id;
+                    $order->client_id = $request->client_id;
+                    $order->service_id = $request->room_id;
+                    $order->start_time = \Carbon\Carbon::now('Africa/Cairo');
+                    $order->discount = $request->discount;
+                    $order->type = 2;
+                    $order->status = 1;
+                    $order->save();
+
+                    if ($request->has('row_product_id')) {
+                        $this->saveOrderItems($request, $order->id);
+                    }
+                } else {
+                    if ($request->has('row_product_id')) {
+                        $this->updateOrderItems($request, $order_exite);
+                    }
+                }
+            } else {
+                $products = OrderSale::where('order_number', $request->order_number)->delete();
+                return redirect()->back()->with('error', 'خطـأ بتسجيل الأوردر برجـــاء تحديد الطلـب  ( طاولة أو روم) واختيار المنتجات');
+            }
+
+            $products = OrderSale::where('order_number', $request->order_number)->delete();
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Added Successfully');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
+        }
+    }
+
+private function calculateTotalPrice($productIds)
+{
+    $total = 0;
+    foreach ($productIds as $productId) {
+        $product = Product::find($productId);
+        if ($product) {
+            $total += $product->price;
+        }
+    }
+    return $total;
+}
+
+private function saveOrderItems($request, $orderId)
+{
+    $countItems = count($request->row_product_id);
+    for ($i = 0; $i < $countItems; $i++) {
+        $prod = Product::find($request->row_product_id[$i]);
+        $orderItem = new OrderItem();
+        $orderItem->order_id = $orderId;
+        $orderItem->product_id = $request->row_product_id[$i];
+        $orderItem->price = $prod->price;
+        $orderItem->qty = $request->qty[$i] ?? 1;
+        $orderItem->total_cost = $prod->price * ($request->qty[$i] ?? 1);
+        $orderItem->save();
+    }
+}
+
+private function updateOrderItems($request, $order_exite)
+{
+    $countItems = count($request->row_product_id);
+    for ($i = 0; $i < $countItems; $i++) {
+        $prod = Product::find($request->row_product_id[$i]);
+        $order_exite->update(['total_price' => $order_exite->total_price + $prod->price]);
+
+        $orderItem = OrderItem::where('order_id', $order_exite->id)
+                              ->where('product_id', $request->row_product_id[$i])
+                              ->first();
+
+        if ($orderItem) {
+            // Update the existing order item
+                // return $orderItem;
+            $orderItem->qty += $request->qty;
+            $orderItem->total_cost = $orderItem->qty * $prod->price;
+            $orderItem->save();
+        } else {
+            // Create a new order item
+            $orderItem = OrderItem::create([
+                'order_id' => $order_exite->id,
+                'product_id' => $request->row_product_id[$i],
+                'qty' => $request->qty[$i] ?? 1,
+                'price' => $prod->price,
+                'total_cost' => $prod->price * ($request->qty ?? 1),
+            ]);
+        }
+    }
+}
+
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        // $order_number = Order::get()->last()->number + 1;
-        // return $request;
-        if($request->table_id !== null) {
-            $order = new Order();
-            $order->number = $request->order_number;
-            $order->user_id = auth()->user()->id;
-            $order->client_id = $request->client_id;
-            $order->service_id = $request->table_id;
-            $order->discount = $request->discount;
-            if ($request->total_price !== null) {
-                $order->total_price = $request->total_price;
-            } else {
-                $total = 0;
-                foreach ($request->row_product_id as $productId) {
-                    $product = Product::find($productId);
-                    if ($product) {
-                        $total += $product->price;
-                    }
-                }
-                $order->total_price = $total;
-            }
+    // public function store(Request $request)
+    // {
+    //     // $order_number = Order::get()->last()->number + 1;
+    //     // return $request;
+    //     if ($request->table_id !== null) {
 
-            $order->type = 1;
-            $order->status = 1;
-            $order->save();
-            // في حالة لو بيعمل ريكويست اكتر من منتج ومستخدم اجاكس ومش محدد كمية
-            if ($request->total_price !== null) {
-                $countItems = count($request->product_id);
-                for ($i = 0; $i < $countItems; $i++) {
-                    $prod = Product::find($request->product_id[$i]);
-                    $order_items = new OrderItem();
-                    $order_items->order_id = $order->id;
-                    $order_items->product_id = $request->product_id[$i];
-                    $order_items->price = $prod->price;
-                    $order_items->qty = $request->qty[$i];
-                    $order_items->total_cost = $prod->price * $request->qty[$i];
-                    $order_items->save();
-                }
-            // في حالة لو بيعمل ريكويست اكتر من منتج من غير مايساخدم اجاكس ومش محدد كمية
-            } else {
-                $countItems = count($request->row_product_id );
-                for ($i = 0; $i < $countItems; $i++) {
-                    $prod = Product::find($request->row_product_id [$i]);
-                    $order_items = new OrderItem();
-                    $order_items->order_id = $order->id;
-                    $order_items->product_id  = $request->row_product_id [$i];
-                    $order_items->price = $prod->price;
-                    $order_items->qty = 1;
-                    $order_items->total_cost = $prod->price * 1;
-                    $order_items->save();
-                }
-            }
-        }
-        elseif ($request->room_id !== null){
-            $order = new Order();
-            $order->number = $request->order_number;
-            $order->user_id = auth()->user()->id;
-            $order->client_id = $request->client_id;
-            $order->service_id = $request->room_id;
-            $order->start_time = \Carbon\Carbon::now('Africa/Cairo');
-            $order->discount = $request->discount;
-            // $order->total_price = $request->total_price;
-            $order->type = 2;
-            $order->status = 1;
-            $order->save();
-            if ($request->product_id != null) {
-                $countItems = count($request->product_id);
-                for ($i = 0; $i < $countItems; $i++) {
-                    $prod = Product::find($request->product_id[$i]);
-                    $order_items = new OrderItem();
-                    $order_items->order_id = $order->id;
-                    $order_items->product_id = $request->product_id[$i];
-                    $order_items->price = $prod->price;
-                    if ($request->qty != null) {
-                        $order_items->qty = $request->qty[$i];
-                        $order_items->total_cost = $prod->price * $request->qty[$i];
-                    } else {
-                        $order_items->total_cost = $prod->price;
-                    }
-                    $order_items->save();
-                }
-            }
-            elseif ($request->row_product_id != null) {
-                $countItems = count($request->row_product_id);
-                for ($i = 0; $i < $countItems; $i++) {
-                    $prod = Product::find($request->row_product_id[$i]);
-                    $order_items = new OrderItem();
-                    $order_items->order_id = $order->id;
-                    $order_items->product_id = $request->row_product_id[$i];
-                    $order_items->price = $prod->price;
-                    if ($request->qty != null) {
-                        $order_items->qty = $request->qty[$i];
-                        $order_items->total_cost = $prod->price * $request->qty[$i];
-                    } else {
-                        $order_items->total_cost = $prod->price;
-                    }
-                    $order_items->save();
-                }
-            }
-        }
-        else {
-            $products = OrderSale::where('order_number', $request->order_number)->delete();
-            return redirect()->back()->with('error', 'خطـأ بتسجيل الأوردر برجاء تحديد الطلب( طاولة أو روم)');
-        }
-        $products = OrderSale::where('order_number', $request->order_number)->delete();
-        return redirect()->back()->with('success', 'Added Successfully');
-    }
+    //         $order_exite = Order::where('service_id', $request->table_id)->where('status', 1)->first();
+    //         if ($order_exite == null) 
+    //         {
+
+    //             // create new order if not found service 
+    //             $order = new Order();
+    //             $order->number = $request->order_number;
+    //             $order->user_id = auth()->user()->id;
+    //             $order->client_id = $request->client_id;
+    //             $order->service_id = $request->table_id;
+    //             $order->discount = $request->discount;
+    //             if ($request->total_price !== null) {
+    //                 $order->total_price = $request->total_price;
+    //             } else {
+    //                 $total = 0;
+    //                 foreach ($request->row_product_id as $productId) {
+    //                     $product = Product::find($productId);
+    //                     if ($product) {
+    //                         $total += $product->price;
+    //                     }
+    //                 }
+    //                 $order->total_price = $total;
+    //             }
+    //             $order->type = 1;
+    //             $order->status = 1;
+    //             $order->save();
+    //             // في حالة لو بيعمل ريكويست اكتر من منتج ومستخدم اجاكس ومش محدد كمية
+    //             if ($request->total_price !== null) {
+    //                 $countItems = count($request->product_id);
+    //                 for ($i = 0; $i < $countItems; $i++) {
+    //                     $prod = Product::find($request->product_id[$i]);
+    //                     $order_items = new OrderItem();
+    //                     $order_items->order_id = $order->id;
+    //                     $order_items->product_id = $request->product_id[$i];
+    //                     $order_items->price = $prod->price;
+    //                     $order_items->qty = $request->qty[$i];
+    //                     $order_items->total_cost = $prod->price * $request->qty[$i];
+    //                     $order_items->save();
+    //                 }
+    //                 // في حالة لو بيعمل ريكويست اكتر من منتج من غير مايساخدم اجاكس ومش محدد كمية
+    //             } else {
+    //                 $countItems = count($request->row_product_id);
+    //                 for ($i = 0; $i < $countItems; $i++) {
+    //                     $prod = Product::find($request->row_product_id[$i]);
+    //                     $order_items = new OrderItem();
+    //                     $order_items->order_id = $order->id;
+    //                     $order_items->product_id = $request->row_product_id[$i];
+    //                     $order_items->price = $prod->price;
+    //                     $order_items->qty = 1;
+    //                     $order_items->total_cost = $prod->price * 1;
+    //                     $order_items->save();
+    //                 }
+    //             }
+    //         } else {
+    //             // return $request;
+    //              $countItems = count($request->row_product_id);
+    //             for ($i = 0; $i < $countItems; $i++ ) {
+    //                 $prod = Product::find($request->row_product_id[$i]);
+    //                  $order_exite->update(['total_price' => $order_exite->total_price + $prod->price]);
+                     
+    //                 $orderItem = OrderItem::where('order_id', $order_exite->id)
+    //                   ->where('product_id', $request->row_product_id[$i])
+    //                   ->first();
+
+    //                 if ($orderItem) {
+    //                     // Update the existing order item
+    //                     $orderItem->qty += $request->qty;
+    //                     // $orderItem->price = $prod->price + 1;
+    //                     $orderItem->total_cost = $orderItem->qty * $prod->price;
+    //                     $orderItem->save();
+    //                 } else {
+    //                     // Create a new order item
+    //                     $orderItem = OrderItem::create([
+    //                         'order_id' => $order_exite->id,
+    //                         'product_id' => $request->row_product_id[$i],
+    //                         'qty' => $request->qty,
+    //                         'price' => $prod->price + 1,
+    //                         'total_cost' => $request->qty * $prod->price,
+    //                     ]);
+    //                 }
+
+    //             }
+    //             }
+    //     }
+    //     elseif ($request->room_id !== null){
+
+            
+    //         $order = new Order();
+    //         $order->number = $request->order_number;
+    //         $order->user_id = auth()->user()->id;
+    //         $order->client_id = $request->client_id;
+    //         $order->service_id = $request->room_id;
+    //         $order->start_time = \Carbon\Carbon::now('Africa/Cairo');
+    //         $order->discount = $request->discount;
+    //         // $order->total_price = $request->total_price;
+    //         $order->type = 2;
+    //         $order->status = 1;
+    //         $order->save();
+    //         if ($request->product_id != null) {
+    //             $countItems = count($request->product_id);
+    //             for ($i = 0; $i < $countItems; $i++) {
+    //                 $prod = Product::find($request->product_id[$i]);
+    //                 $order_items = new OrderItem();
+    //                 $order_items->order_id = $order->id;
+    //                 $order_items->product_id = $request->product_id[$i];
+    //                 $order_items->price = $prod->price;
+    //                 if ($request->qty != null) {
+    //                     $order_items->qty = $request->qty[$i];
+    //                     $order_items->total_cost = $prod->price * $request->qty[$i];
+    //                 } else {
+    //                     $order_items->total_cost = $prod->price;
+    //                 }
+    //                 $order_items->save();
+    //             }
+    //         }
+    //         elseif ($request->row_product_id != null) {
+    //             $countItems = count($request->row_product_id);
+    //             for ($i = 0; $i < $countItems; $i++) {
+    //                 $prod = Product::find($request->row_product_id[$i]);
+    //                 $order_items = new OrderItem();
+    //                 $order_items->order_id = $order->id;
+    //                 $order_items->product_id = $request->row_product_id[$i];
+    //                 $order_items->price = $prod->price;
+    //                 if ($request->qty != null) {
+    //                     $order_items->qty = $request->qty[$i];
+    //                     $order_items->total_cost = $prod->price * $request->qty[$i];
+    //                 } else {
+    //                     $order_items->total_cost = $prod->price;
+    //                 }
+    //                 $order_items->save();
+    //             }
+    //         }
+    //     }
+    //     else {
+    //         $products = OrderSale::where('order_number', $request->order_number)->delete();
+    //         return redirect()->back()->with('error', 'خطـأ بتسجيل الأوردر برجاء تحديد الطلب( طاولة أو روم)');
+    //     }
+    //     $products = OrderSale::where('order_number', $request->order_number)->delete();
+    //     return redirect()->back()->with('success', 'Added Successfully');
+    // }
 
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show(Order $order)
     {
+        return view('admin.orders.show', compact('order'));
     }
 
     /**
@@ -170,7 +330,7 @@ class OrderController extends Controller
      */
     public function edit(Product $product)
     {
-        return view('admin.products.edit', compact('product'));
+         return view('admin.products.edit', compact('product'));
     }
 
     /**
@@ -187,7 +347,7 @@ class OrderController extends Controller
     public function destroy(Product $product)
     {
         $product->delete();
-        return redirect()->route('groups.index')->with('success', 'Deleted Successfully');
+        return redirect()->route('orders.index')->with('success', 'Deleted Successfully');
     }
 
     public function closeTime($id)
@@ -240,6 +400,11 @@ class OrderController extends Controller
         $order->update(['status' => 2]);
         return view('admin.orders.print', compact('order'));
     }
+    public function printTableCaptinOrder($id)
+    {
+        $order = Order::with('orderItems')->findOrFail($id);
+        return view('admin.orders.print-captin-order', compact('order'));
+    }
     public function printRoom($id)
     {
         $order = Order::with('orderItems')->findOrFail($id);
@@ -254,11 +419,11 @@ class OrderController extends Controller
     }
     public function updateQtyAjax (Request $request)
     {
-       $new_qty = $request->qty;
+        $new_qty = $request->qty;
         $product = OrderSale::where('id', $request->product_id)->first();
         $old_qty = $product->qty;
         $product->update(['qty' => $new_qty]);
-       $total_price_item = $request->qty * $request->price;
+        $total_price_item = $request->qty * $request->price;
         return response()->json(['status' => true, 'total_price_item' => $total_price_item]);
     }
     public function saleAjaxDestroy (Request $request)
@@ -270,6 +435,24 @@ class OrderController extends Controller
         return response()->json([
             'success' => 'Record deleted successfully!',
             'price' => $price,
+        ]);
+    }
+    public function ItemAjaxDestroy(Request $request)
+    {
+        $orderItem = OrderItem::find($request->item_id);
+        $origin_order = $orderItem->order;
+        $orderItem->delete();
+        // Check if the associated Order doesn't have any more OrderItems
+        if ($orderItem->order->whereDoesntHave('orderItems')->where('type', 1)->exists()) {
+            // Delete the Order
+            $orderItem->order->delete();
+        }
+        // return ($origin_order);
+        // if($origin_order->$orderItem->count() == 1){
+        //     return 33;
+        // }
+        return response()->json([
+            'success' => 'Record deleted successfully!',
         ]);
     }
 }

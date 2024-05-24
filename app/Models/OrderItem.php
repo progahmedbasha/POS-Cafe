@@ -18,4 +18,16 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Product::class);
     }
+     protected static function boot()
+    {
+        parent::boot();
+
+        static::deleted(function ($orderItem) {
+            // Check if the associated Order doesn't have any more OrderItems
+            if ($orderItem->order->whereDoesntHave('orderItems')->where('type', 1)->exists()) {
+                // Delete the Order
+                $orderItem->order->delete();
+            }
+        });
+    }
 }

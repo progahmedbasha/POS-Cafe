@@ -1,10 +1,10 @@
 <!-- Modal -->
-<div class="modal fade" id="exampleModal{{$index}}" tabindex="-1" aria-labelledby="exampleModalLabel{{$index}}"
+<div class="modal fade" id="roomModal{{$index}}" tabindex="-1" aria-labelledby="roomModalLabel{{$index}}"
     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel{{$index}}">طاولة : ({{ $active_table->service->name }})
+                <h5 class="modal-title" id="roomModalLabel{{$index}}">رووم : ({{ $active_room->service->name }})
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -35,15 +35,15 @@
                     <div>-</div>
 
                     <!-- Grid Items -->
-                    @foreach($active_table->orderItems as $index=>$item)
+                    @foreach($active_room->orderItems as $index=>$item)
                     <div>{{ $item->product->name }}</div>
                     <div>{{ $item->qty }}</div>
                     <div>{{ $item->price }}</div>
                     <div>{{ $item->total_cost }}</div>
                     {{-- <div> --}}
-                    <button type="button" data-id="{{ $item->id }}" class="btn btn-danger delete_item" style="padding: 0px;"><i
-                            class="glyphicon glyphicon-trash"></i> <svg width="20" viewBox="0 0 24 24" fill="none"
-                            xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
+                    <button type="button" data-id="{{ $item->id }}" class="btn btn-danger delete_item"
+                        style="padding: 0px;"><i class="glyphicon glyphicon-trash"></i> <svg width="20"
+                            viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
                             <path
                                 d="M19.3248 9.46826C19.3248 9.46826 18.7818 16.2033 18.4668 19.0403C18.3168 20.3953 17.4798 21.1893 16.1088 21.2143C13.4998 21.2613 10.8878 21.2643 8.27979 21.2093C6.96079 21.1823 6.13779 20.3783 5.99079 19.0473C5.67379 16.1853 5.13379 9.46826 5.13379 9.46826"
                                 stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -59,6 +59,37 @@
                     {{-- </div> --}}
                     @endforeach
                 </div>
+                <br>
+                @if ($active_room->orderItems->count() > 0)
+                اجمالي المشروبات : 
+                {{ $active_room->orderItems->sum('total_cost') }} ج
+                @endif
+                <hr>
+                <h6>بداية الوقت : {{ date('h:i:s', strtotime($active_room->start_time)) }}</h6>
+                <h6>الوقت :
+                    @if ($active_room->end_time != null)
+                    {{\Carbon\Carbon::parse($active_room->start_time)->diff(\Carbon\Carbon::parse($active_room->end_time))->format('%h:%i:%s')}}
+                    @endif
+                </h6>
+                <h6>سعر الوقت : @if ($active_room->end_time != null)
+                    @php
+                    $startTime = \Carbon\Carbon::parse($active_room->start_time);
+                    $endTime = \Carbon\Carbon::parse($active_room->end_time);
+                    $durationInSeconds = $startTime->diffInSeconds($endTime);
+                    $price = $active_room->service->ps_price;
+                    $totalPrice = $durationInSeconds ? intval(($durationInSeconds / 3600) * $price) : 0;
+                    @endphp
+                    {{ $totalPrice }} ج
+                    @endif
+                </h6>
+                <hr>
+                <h6> 
+                    @if ($active_room->orderItems->count() > 0 && $active_room->end_time != null)
+                    <h6>المبلغ الاجمالي : {{ $totalPrice + $active_room->orderItems->sum('total_cost')}} ج</h6>
+                    @else
+                    <h6>--</h6>
+                    @endif
+                </h6>
 
             </div>
             <div class="modal-footer">

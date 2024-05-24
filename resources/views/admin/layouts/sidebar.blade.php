@@ -165,7 +165,7 @@
                         <span class="item-name">الغياب</span>
                     </a>
                 </li> --}}
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link @if(Route::is('products.create') ) active @endif"
                         href="{{ route('products.create') }}">
                         <i class="icon">
@@ -184,7 +184,7 @@
                         </i>
                         <span class="item-name">دفع</span>
                     </a>
-                </li>
+                </li> --}}
 
                 <li>
                     <hr class="hr-horizontal">
@@ -196,8 +196,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link @if(Route::is('products.index') ) active @endif"
-                        href="{{ route('products.index') }}">
+                    <a class="nav-link @if(Route::is('orders.index') ) active @endif"
+                        href="{{ route('orders.index') }}">
                         <i class="icon">
                             <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M7.37121 10.2017V17.0618" stroke="currentColor" stroke-width="1.5"
@@ -212,7 +212,7 @@
                                     stroke-linejoin="round"></path>
                             </svg>
                         </i>
-                        <span class="item-name">المدفوعات</span>
+                        <span class="item-name">المبيعات</span>
                     </a>
                 </li>
                 <li>

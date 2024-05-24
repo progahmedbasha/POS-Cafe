@@ -11,7 +11,8 @@
                 <div class="flex-wrap d-flex justify-content-between align-items-center">
                     <div>
                         <h1>مرحباً</h1>
-                        <p>مــــــدير كافيــة الركنـــة</p>
+                        {{-- <p>مــــــدير كافيــة الركنـــة</p> --}}
+                        <p>( أ . موكشا ) مدير كافيهات الركنـــة</p>
                     </div>
                     <div>
                         <!--<a href="" class="btn btn-link btn-soft-light">

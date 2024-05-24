@@ -1,13 +1,7 @@
 @extends('admin.layouts.master')
 @section('content')
 <!-- Nav Header Component Start -->
-<x-dashboard.base.nav>
-
-    <x-slot:heading>
-        متابعـة الأوردرات :
-        </x-slot>
-        {{-- We are on a mission to help developers like you build successful projects for FREE. --}}
-</x-dashboard.base.nav>
+<br><br><br>
 <!-- Nav Header Component End -->
 <!--Nav End-->
 </div>
@@ -152,7 +146,7 @@
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">حفظ</button>
+                    <button type="submit" class="btn btn-primary">تسجيل أوردر</button>
                 </form>
             </div>
         </div>
@@ -190,11 +184,11 @@
                             @foreach($active_tables as $index=>$active_table)
                             <tr>
                                 <td>طاولة : ( {{ $active_table->service->name }} )</td>
-                                <td>{{ $active_table->orderItems->sum('price') }}</td>
+                                <td>{{ $active_table->orderItems->sum('total_cost') }}</td>
                                 <td>
                                     <!-- Button trigger modal -->
-                                    <button type="button" class="btn btn-sm btn-icon btn-success" title="عرض الفاتورة" data-bs-toggle="modal"
-                                        data-bs-target="#exampleModal{{$index}}">
+                                    <button type="button" class="btn btn-sm btn-icon btn-success" title="عرض الفاتورة"
+                                        data-bs-toggle="modal" data-bs-target="#exampleModal{{$index}}">
                                         <svg width="20" viewBox="0 0 24 24" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">
                                             <path
@@ -209,7 +203,10 @@
                                             <circle opacity="0.89" cx="13.5" cy="10.5" r="1.5" fill="white"></circle>
                                         </svg>
                                     </button>
-
+                                    {{-- to print captin order  --}}
+                                    <a href="#" class="btn btn-sm btn-icon btn-danger" style="font-size:xx-small;"
+                                        onclick='openmodlePrintCaptinOrder("{{route("print_table_captin_order",["id" => $active_table->id] ) }}")'>Captin<br>Order
+                                    </a>
                                     <a href="#" class="btn btn-sm btn-icon btn-danger"
                                         onclick='openmodle("{{route("print_table",["id" => $active_table->id] ) }}")'>
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="1em"
@@ -226,6 +223,7 @@
                         </tbody>
                     </table>
                     <iframe id="iframe" src="" style="display:none;"></iframe>
+                    <iframe id="iframeCaptinOrder" src="" style="display:none;"></iframe>
                 </div>
             </div>
         </div>
@@ -293,12 +291,32 @@
                                 @endif
 
                                 <td>
-                                    <x-dashboard.a-show href="{{ route('orders.show', $active_room->id) }}"
-                                        title="عرض الفاتورة ">
-                                    </x-dashboard.a-show>
+                                    {{-- <x-dashboard.a-show href="{{ route('orders.show', $active_room->id) }}"
+                                    title="عرض الفاتورة ">
+                                    </x-dashboard.a-show> --}}
+                                    <button type="button" class="btn btn-sm btn-icon btn-success" title="عرض الفاتورة"
+                                        data-bs-toggle="modal" data-bs-target="#roomModal{{$index}}">
+                                        <svg width="20" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M22.4541 11.3918C22.7819 11.7385 22.7819 12.2615 22.4541 12.6082C21.0124 14.1335 16.8768 18 12 18C7.12317 18 2.98759 14.1335 1.54586 12.6082C1.21811 12.2615 1.21811 11.7385 1.54586 11.3918C2.98759 9.86647 7.12317 6 12 6C16.8768 6 21.0124 9.86647 22.4541 11.3918Z"
+                                                stroke="currentColor"></path>
+                                            <circle cx="12" cy="12" r="5" stroke="currentColor"></circle>
+                                            <circle cx="12" cy="12" r="3" fill="currentColor"></circle>
+                                            <mask mask-type="alpha" maskUnits="userSpaceOnUse" x="9" y="9" width="6"
+                                                height="6">
+                                                <circle cx="12" cy="12" r="3" fill="currentColor"></circle>
+                                            </mask>
+                                            <circle opacity="0.89" cx="13.5" cy="10.5" r="1.5" fill="white"></circle>
+                                        </svg>
+                                    </button>
                                     <a href="{{ route('close_time', $active_room->id) }}"
                                         class="btn btn-sm btn-icon btn-warning">
                                         انهاء الوقت
+                                    </a>
+                                    {{-- to print captin order  --}}
+                                    <a href="#" class="btn btn-sm btn-icon btn-danger" style="font-size:xx-small;"
+                                        onclick='openmodlePrintCaptinOrder("{{route("print_table_captin_order",["id" => $active_room->id] ) }}")'>Captin<br>Order
                                     </a>
                                     @if ($active_room->end_time != null)
                                     <a href="#" class="btn btn-sm btn-icon btn-danger"
@@ -312,6 +330,7 @@
                                     @endif
                                 </td>
                             </tr>
+                            @include('admin.orders.modal_view_order_room')
                             @endforeach
                         </tbody>
                     </table>
@@ -382,7 +401,9 @@
             window.location.reload();
         }, 5000);
     }
-    
+    function openmodlePrintCaptinOrder(url){
+        document.getElementById("iframeCaptinOrder").src=url;
+    }
 </script>
 
 @endsection

@@ -75,7 +75,7 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         $product->delete();
-        return redirect()->route('groups.index')->with('success', 'Deleted Successfully');
+        return redirect()->route('products.index')->with('success', 'Deleted Successfully');
     }
 
     public function saveImage($filename, $path)

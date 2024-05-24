@@ -68,7 +68,9 @@
                             @if ($order->type == 1)
                                 طاولة : {{ $order->service->name }}
                             @endif
-                            {{ $order->service->name }}
+                            @if ($order->type == 2)
+                                Room : {{ $order->service->name }}
+                            @endif
                             </td>
                     </tr>
                 </table>

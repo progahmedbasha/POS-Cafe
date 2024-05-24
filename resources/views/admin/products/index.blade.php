@@ -32,8 +32,8 @@
                                     <tr class="ligth">
                                         <th class="text-center">#</th>
                                         <th>اسم المنتج</th>
-                                        <th>السعر</th>
                                         <th>الكمية</th>
+                                        <th>السعر</th>
                                         <th>صورة المنتج</th>
                                         <th style="min-width: 100px">الإعدادات</th>
                                     </tr>

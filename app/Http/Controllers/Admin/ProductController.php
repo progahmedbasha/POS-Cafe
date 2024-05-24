@@ -84,4 +84,9 @@ class ProductController extends Controller
             request()->photo->move(public_path($path), $file);
         return $file;
     }
+    public function menu()
+    {
+        $products = Product::all();
+        return view('website.menu', compact('products'));
+    }
 }

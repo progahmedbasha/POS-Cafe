@@ -40,6 +40,10 @@ Route::group(
             Route::delete('item_ajax_destroy', [OrderController::class, 'ItemAjaxDestroy'])->name('item_ajax_destroy');
     }
 );
+Route::get('/', function(){
+        return view('website.index');
+    })->name('website');
+    Route::get('menu' , [ProductController::class, 'menu'])->name('menu');
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

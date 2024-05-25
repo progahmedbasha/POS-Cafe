@@ -7,6 +7,7 @@
             <th>الكمية</th>
             <th>السعر</th>
             <th>الاجمالي</th>
+            <th>ملاحظة</th>
             <th></th>
         </tr>
     </thead>
@@ -28,6 +29,7 @@
                 <x-dashboard.delete-button type="button" data-id="{{ $product->id }}" class="btn btn-danger
             delete_order_item delete"></x-dashboard.delete-button>
             </td> --}}
+            <td><input type="text"  name="row_note[]" value="{{ $product->note }}" class="form-control"></td>
             <td class="no-print"><button type="button" data-id="{{ $product->id }}"
                     class="btn btn-danger delete_order_item delete" style="padding: 0px;"><i
                         class="glyphicon glyphicon-trash"></i> <svg width="20" viewBox="0 0 24 24" fill="none"

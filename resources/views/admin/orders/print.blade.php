@@ -119,13 +119,10 @@
                 <span style="float:left;">3 ج</span><span style="float:right;">المتبقي</span> --}}
                 <br>
                 <br>
-                <span><i class="fa fa-phone" aria-hidden="true"></i> 01094980688</span>
-                &nbsp;&nbsp;-&nbsp;&nbsp;
-                <span><i class="fa fa-whatsapp" aria-hidden="true"></i> 01094980688</span>
+                <span><i class="fa fa-whatsapp" aria-hidden="true"></i> 01557096973</span>
                 <br>
-                <span><i class="fa fa-instagram" aria-hidden="true"></i> ROKNA_CAFE_RK</span>
-                <br>
-                <span> اسم الشارع - ميت غمر</span>
+                {{-- <span><i class="fa fa-instagram" aria-hidden="true"></i> ROKNA_CAFE_RK</span> --}}
+                <span>شارع شفيق البكري - متفرع من شارع بورسعيد</span>
                 <br><br>
                 {{-- <img src="data:image/png;base64,w" alt="barcode" /> --}}
                 {{-- <br>

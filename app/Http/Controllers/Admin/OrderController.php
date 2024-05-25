@@ -48,10 +48,11 @@ class OrderController extends Controller
 
     public function store(Request $request)
     {
+        // return $request;
         DB::beginTransaction();
 
         try {
-            if ($request->table_id !== null && $request->has('row_product_id')) {
+            if ($request->table_id !== null && $request->has('product_id')) {
                 $order_exite = Order::where('service_id', $request->table_id)->where('status', 1)->first();
 
                 if ($order_exite == null) {
@@ -62,13 +63,15 @@ class OrderController extends Controller
                     $order->client_id = $request->client_id;
                     $order->service_id = $request->table_id;
                     $order->discount = $request->discount;
-                    $order->total_price = $request->total_price ?? $this->calculateTotalPrice($request->row_product_id);
+                    $order->total_price = $request->total_price ?? $this->calculateTotalPrice($request->product_id);
                     $order->type = 1;
                     $order->status = 1;
+                    $order->note = $request->note;
                     $order->save();
 
                     $this->saveOrderItems($request, $order->id);
                 } else {
+                    $order_exite->update(['note' => $request->note ]);
                     $this->updateOrderItems($request, $order_exite);
                 }
             } elseif ($request->room_id !== null) {
@@ -85,13 +88,15 @@ class OrderController extends Controller
                     $order->discount = $request->discount;
                     $order->type = 2;
                     $order->status = 1;
+                    $order->note = $request->note;
                     $order->save();
 
-                    if ($request->has('row_product_id')) {
+                    if ($request->has('product_id')) {
                         $this->saveOrderItems($request, $order->id);
                     }
                 } else {
-                    if ($request->has('row_product_id')) {
+                    if ($request->has('product_id')) {
+                        $order_exite->update(['note' => $request->note ]);
                         $this->updateOrderItems($request, $order_exite);
                     }
                 }
@@ -124,45 +129,75 @@ private function calculateTotalPrice($productIds)
 
 private function saveOrderItems($request, $orderId)
 {
-    $countItems = count($request->row_product_id);
+        // dd($request);
+        if($request->row_product_id != null)
+        {
+            $product_id = $request->row_product_id;
+        } else {
+            $product_id = $request->product_id;
+        }
+    $countItems = count($product_id);
     for ($i = 0; $i < $countItems; $i++) {
-        $prod = Product::find($request->row_product_id[$i]);
+        $prod = Product::find($product_id[$i]);
         $orderItem = new OrderItem();
         $orderItem->order_id = $orderId;
-        $orderItem->product_id = $request->row_product_id[$i];
+        $orderItem->product_id = $product_id[$i];
         $orderItem->price = $prod->price;
         $orderItem->qty = $request->qty[$i] ?? 1;
         $orderItem->total_cost = $prod->price * ($request->qty[$i] ?? 1);
+        if($request->row_note)
+        $orderItem->note = $request->row_note[$i];
         $orderItem->save();
     }
 }
 
 private function updateOrderItems($request, $order_exite)
 {
-    $countItems = count($request->row_product_id);
+    $countItems = count($request->product_id);
     for ($i = 0; $i < $countItems; $i++) {
-        $prod = Product::find($request->row_product_id[$i]);
+        $prod = Product::find($request->product_id[$i]);
         $order_exite->update(['total_price' => $order_exite->total_price + $prod->price]);
 
         $orderItem = OrderItem::where('order_id', $order_exite->id)
-                              ->where('product_id', $request->row_product_id[$i])
+                              ->where('product_id', $request->product_id[$i])
                               ->first();
 
-        if ($orderItem) {
+        if ($orderItem && $request->row_note == null) {
             // Update the existing order item
-                // return $orderItem;
+                // dd($orderItem);
             $orderItem->qty += $request->qty;
             $orderItem->total_cost = $orderItem->qty * $prod->price;
+        //    $orderItem->note = $request->note;
             $orderItem->save();
         } else {
+                // dd($request);
             // Create a new order item
+            // $orderItem = OrderItem::create([
+            //     'order_id' => $order_exite->id,
+            //     'product_id' => $request->row_product_id[$i],
+            //     'qty' => $request->qty[$i] ?? 1,
+            //     'price' => $prod->price,
+            //     'total_cost' => $prod->price * ($request->qty ?? 1)
+            // ]);
+            if($request->row_note){
             $orderItem = OrderItem::create([
                 'order_id' => $order_exite->id,
-                'product_id' => $request->row_product_id[$i],
+                'product_id' => $request->product_id[$i],
                 'qty' => $request->qty[$i] ?? 1,
                 'price' => $prod->price,
-                'total_cost' => $prod->price * ($request->qty ?? 1),
+                'total_cost' => $prod->price * ($request->qty[$i] ?? 1),
+                'note' => $request->row_note[$i]
             ]);
+            }else {
+                $orderItem = OrderItem::create([
+                'order_id' => $order_exite->id,
+                'product_id' => $request->product_id[$i],
+                'qty' => $request->qty[$i] ?? 1,
+                'price' => $prod->price,
+                'total_cost' => $prod->price * ($request->qty[$i] ?? 1),
+            ]);
+            }
+
         }
     }
 }
@@ -344,9 +379,9 @@ private function updateOrderItems($request, $order_exite)
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy(Order $order)
     {
-        $product->delete();
+        // $order->delete();
         return redirect()->route('orders.index')->with('success', 'Deleted Successfully');
     }
 
@@ -372,13 +407,13 @@ private function updateOrderItems($request, $order_exite)
                                 ->where('order_number', $order_number)
                                 ->first();
 
-            if ($product) {
-                // If the product already exists, update its quantity and total cost
-                $prod = Product::find($request->row_product_id[$i]);
-                $product->qty += $request->qty; // Increment the quantity
-                $product->total_cost += $prod->price * $request->qty[$i]; // Update total cost
-                $product->save();
-            } else {
+            // if ($product) {
+            //     // If the product already exists, update its quantity and total cost
+            //     $prod = Product::find($request->row_product_id[$i]);
+            //     $product->qty += $request->qty; // Increment the quantity
+            //     $product->total_cost += $prod->price * $request->qty[$i]; // Update total cost
+            //     $product->save();
+            // } else {
                 // If the product doesn't exist, create a new record
                 $prod = Product::find($request->row_product_id[$i]);
                 $product = new OrderSale();
@@ -388,7 +423,7 @@ private function updateOrderItems($request, $order_exite)
                 $product->qty = $request->qty ?? 1;
                 $product->total_cost = $prod->price * $product->qty;
                 $product->save();
-            }
+            // }
         }
         $products = OrderSale::all();
         $html = view('admin.orders.add-block-fetch', compact('products'))->render();

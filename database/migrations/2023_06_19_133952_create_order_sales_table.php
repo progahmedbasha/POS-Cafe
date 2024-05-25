@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedInteger('qty')->default(1);
             $table->unsignedInteger('price');
             $table->unsignedInteger('total_cost');
+            $table->string('note', 50)->nullable();
             $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });

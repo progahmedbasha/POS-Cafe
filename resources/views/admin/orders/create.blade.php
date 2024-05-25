@@ -115,7 +115,7 @@
                                 <label class="form-label" for="email">المنتج :</label><br>
                                 <select id="row_product_id" class="js-example-basic-multiple form-control"
                                     multiple="multiple" name="row_product_id[]" />
-                                <option value="" disabled>المنتجــات</option>
+                                {{-- <option value="" disabled>المنتجــات</option> --}}
                                 @foreach ($products as $product)
                                 <option value="{{$product->id}}" {{(old($product->id)==$product->id)?
                                     'selected':''}}>
@@ -146,6 +146,7 @@
                             </div>
                         </div>
                     </div>
+                    <input type="textarea" name="note"/>
                     <button type="submit" class="btn btn-primary">تسجيل أوردر</button>
                 </form>
             </div>
@@ -392,6 +393,8 @@
                   success:function(response){
                         $('#duplicate').html(response.result);
                         document.getElementById("block-table").style.display = "table";
+                        // Empty the select input
+                        $('#row_product_id').val(null).trigger('change');
                   },
                  });
         }

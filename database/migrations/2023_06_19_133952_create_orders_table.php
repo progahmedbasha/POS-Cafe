@@ -23,6 +23,7 @@ return new class extends Migration
             $table->timestamp('end_time')->nullable();
             $table->unsignedTinyInteger('type');
             $table->unsignedTinyInteger('status');
+            $table->string('note', 50)->nullable();
             $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });

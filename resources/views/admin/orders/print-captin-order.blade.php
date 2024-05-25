@@ -66,12 +66,12 @@
                     <tr>
                         <td>
                             @if ($order->type == 1)
-                                طاولة : {{ $order->service->name }}
+                            طاولة : {{ $order->service->name }}
                             @endif
                             @if ($order->type == 2)
-                                Room : {{ $order->service->name }}
+                            Room : {{ $order->service->name }}
                             @endif
-                            </td>
+                        </td>
                     </tr>
                 </table>
                 <br>
@@ -80,19 +80,24 @@
                 <table>
                     <tr>
                         <th style="width:200px;">الصنف</th>
+                        <th>ملاحظة</th>
                         <th>الكمية</th>
                     </tr>
                     @foreach ($order->orderItems as $item)
                     <tr>
                         <td>{{ $item->product->name }}</td>
+                        <td>{{ $item->note }}</td>
                         <td>{{ $item->qty }}</td>
                     </tr>
                     @endforeach
                 </table>
+                @if ($order->note !=null)
                 <hr>
+                <h5>ملاحظة : {{ $order->note }}</h5>
+                <hr>
+                @endif
                 <br>
             </div>
         </center>
         {{--</div>--}}
     </body>
-    

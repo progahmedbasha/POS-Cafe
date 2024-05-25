@@ -146,8 +146,8 @@
                             </div>
                         </div>
                     </div>
-                    <input type="textarea" name="note"/>
-                    <button type="submit" class="btn btn-primary">تسجيل أوردر</button>
+                    <button type="submit" class="btn btn-primary">تسجيل أوردر</button><hr>
+                    <textarea type="text" class="form-label" name="note" placeholder="اضافة ملاحظات للأوردر"></textarea>
                 </form>
             </div>
         </div>

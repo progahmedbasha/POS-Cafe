@@ -35,6 +35,7 @@
                                         <th>العميل</th>
                                         <th>نوع الخدمة</th>
                                         <th>اجمالي الفاتورة</th>
+                                        <th>التاريخ</th>
                                         <th style="min-width: 100px">الإعدادات</th>
                                     </tr>
                                 </thead>
@@ -47,6 +48,7 @@
                                         <td>{{ $order->client->name }}</td>
                                         <td>{{ $order->service->name }}</td>
                                         <td>{{ $order->total_price }}</td>
+                                        <td>{{ $order->created_at }}</td>
                                         <td>
                                             <div class="flex align-items-center list-user-action"
                                                 style="display: flex;">

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\InvoiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +39,7 @@ Route::group(
             Route::post('update_qty_ajax', [OrderController::class, 'updateQtyAjax'])->name('update_qty_ajax');
             Route::delete('sale_ajax_destroy', [OrderController::class, 'saleAjaxDestroy'])->name('sale_ajax_destroy');
             Route::delete('item_ajax_destroy', [OrderController::class, 'ItemAjaxDestroy'])->name('item_ajax_destroy');
+            Route::resource('invoices', InvoiceController::class);
     }
 );
 Route::get('/', function(){

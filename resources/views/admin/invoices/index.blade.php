@@ -41,7 +41,7 @@
                                 </div>
                                 <div class="col">
                                     <label class="form-label">الكاشير</label>
-                                    <select class="form-control" name="level_id">
+                                    <select class="form-control" name="user_id">
                                         <option value="">اختر الكاشير </option>
                                         @foreach ($users as $user)
                                         <option value="{{$user->id}}">

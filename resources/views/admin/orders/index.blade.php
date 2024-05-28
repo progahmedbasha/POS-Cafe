@@ -48,7 +48,7 @@
                                         <td>{{ $order->client->name }}</td>
                                         <td>{{ $order->service->name }}</td>
                                         <td>{{ $order->total_price }}</td>
-                                        <td>{{ $order->created_at }}</td>
+                                        <td>{{ $order->updated_at }}</td>
                                         <td>
                                             <div class="flex align-items-center list-user-action"
                                                 style="display: flex;">

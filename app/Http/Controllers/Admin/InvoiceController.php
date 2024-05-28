@@ -18,7 +18,7 @@ class InvoiceController extends Controller
         $invoices = Order::with('user');
         $users = User::all();
         if (isset($request->from) && isset($request->to))
-            $invoices = $invoices->whereBetween(DB::raw('DATE(created_at)'), [$request->from, $request->to]);
+            $invoices = $invoices->whereBetween(DB::raw('DATE(updated_at)'), [$request->from, $request->to]);
         if (isset($request->user_id))
             $invoices->where('user_id', $request->user_id);
         $invoices = $invoices->paginate(config('admin.pagination'));

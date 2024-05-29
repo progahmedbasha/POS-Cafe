@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('type', 50);
             $table->unsignedInteger('ps_price')->nullable();
             $table->string('status', 50)->default('0');
+            $table->unsignedTinyInteger('ps_type')->nullable();
             $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });

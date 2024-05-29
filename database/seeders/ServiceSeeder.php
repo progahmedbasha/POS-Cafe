@@ -70,32 +70,38 @@ class ServiceSeeder extends Seeder
         DB::table('services')->insert([
             'name' => 'r1',
             'type' => '2',
-            'ps_price' => '50',
+            'ps_price' => '60',
+            'ps_type' => 5
         ]);
         DB::table('services')->insert([
             'name' => 'r2',
             'type' => '2',
-            'ps_price' => '50',
+            'ps_price' => '60',
+            'ps_type' => 5
         ]);
         DB::table('services')->insert([
             'name' => 'r3',
             'type' => '2',
-            'ps_price' => '50',
+            'ps_price' => '40',
+            'ps_type' => 4
         ]);
         DB::table('services')->insert([
             'name' => 'r4',
             'type' => '2',
-            'ps_price' => '50',
+            'ps_price' => '60',
+            'ps_type' => 5
         ]);
         DB::table('services')->insert([
             'name' => 'r5',
             'type' => '2',
-            'ps_price' => '50',
+            'ps_price' => '40',
+            'ps_type' => 4
         ]);
         DB::table('services')->insert([
             'name' => 'r6',
             'type' => '2',
-            'ps_price' => '50',
+            'ps_price' => '40',
+            'ps_type' => 4
         ]);
     }
 }

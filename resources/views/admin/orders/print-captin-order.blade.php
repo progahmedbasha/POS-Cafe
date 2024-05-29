@@ -86,7 +86,7 @@
                     @foreach ($order->orderItems as $item)
                     <tr>
                         <td>{{ $item->product->name }}</td>
-                        <td>{{ $item->note }}</td>
+                        <td style="width: 50%;">{{ $item->note }}</td>
                         <td>{{ $item->qty }}</td>
                     </tr>
                     @endforeach

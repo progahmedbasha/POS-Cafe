@@ -30,14 +30,13 @@ class RoomController extends Controller
      */
     public function store(StoreRoomRequest $request)
     {
-        $product = new Product();
-        $product->name = $request->name;
-        $product->price = $request->price;
-        if (request()->photo) {
-            $product->photo = $this->saveImage($request->photo, $product->image);
-        }
-        $product->save();
-        return redirect()->route('products.index')->with('success', 'Added Successfully');
+        Service::create([
+            'name' => $request->name,
+            'type' => '2',
+            'ps_price' => $request->ps_price,
+            'ps_type' => $request->ps_type
+        ]);
+        return redirect()->route('rooms.index')->with('success', 'Added Successfully');
     }
 
     /**
@@ -74,21 +73,10 @@ class RoomController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy($id )
     {
-        $product->delete();
-        return redirect()->route('products.index')->with('success', 'Deleted Successfully');
-    }
-
-    public function saveImage($filename, $path)
-    {
-        $file = time() . '.' . $filename->getClientOriginalExtension();
-            request()->photo->move(public_path($path), $file);
-        return $file;
-    }
-    public function menu()
-    {
-        $products = Product::all();
-        return view('website.menu', compact('products'));
+        $service = Service::find($id);
+        $service->delete();
+        return redirect()->route('rooms.index')->with('success', 'Deleted Successfully');
     }
 }

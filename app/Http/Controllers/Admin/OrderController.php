@@ -153,6 +153,7 @@ class OrderController extends Controller
                     $order->service_id = $request->room_id;
                     $order->start_time = \Carbon\Carbon::now('Africa/Cairo');
                     $order->discount = $request->discount;
+                    if($request->has('product_id'))
                     $order->total_price = $this->calculateTotalPrice($request->product_id, $request->qty);
                     $order->type = 2;
                     $order->status = 1;

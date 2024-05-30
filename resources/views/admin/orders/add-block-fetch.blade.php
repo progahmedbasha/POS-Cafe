@@ -12,7 +12,7 @@
         </tr>
     </thead>
     <tbody>
-        <input type="hidden" id="total_price" value="{{ $products->sum('total_cost') }}" name="total_price" readonly>
+        <input type="text" id="total_price" value="{{ $products->sum('total_cost') }}" name="total_price" readonly>
 
         @foreach($products as $index=>$product)
         <tr>

@@ -46,8 +46,76 @@ class OrderController extends Controller
         return view('admin.orders.create', compact('products', 'clients', 'tabels', 'rooms', 'active_tables', 'active_rooms', 'order_number'));
     }
 
+    // public function store(Request $request)
+    // {
+    //     DB::beginTransaction();
+
+    //     try {
+    //         if ($request->table_id !== null && $request->has('product_id')) {
+    //             $order_exite = Order::where('service_id', $request->table_id)->where('status', 1)->first();
+
+    //             if ($order_exite == null) {
+    //                 // Create new order if not found service
+    //                 $order = new Order();
+    //                 $order->number = $request->order_number;
+    //                 $order->user_id = auth()->user()->id;
+    //                 $order->client_id = $request->client_id;
+    //                 $order->service_id = $request->table_id;
+    //                 $order->discount = $request->discount;
+    //                 $order->total_price = $request->total_price ?? $this->calculateTotalPrice($request->product_id);
+    //                 $order->type = 1;
+    //                 $order->status = 1;
+    //                 $order->note = $request->note;
+    //                 $order->save();
+
+    //                 $this->saveOrderItems($request, $order->id);
+    //             } else {
+    //                 $order_exite->update(['note' => $request->note ]);
+    //                 $this->updateOrderItems($request, $order_exite);
+    //             }
+    //         } elseif ($request->room_id !== null) {
+    //             $order_exite = Order::where('service_id', $request->room_id)->where('status', 1)->first();
+
+    //             if ($order_exite == null) {
+    //                 // Create new order if not found service
+    //                 $order = new Order();
+    //                 $order->number = $request->order_number;
+    //                 $order->user_id = auth()->user()->id;
+    //                 $order->client_id = $request->client_id;
+    //                 $order->service_id = $request->room_id;
+    //                 $order->start_time = \Carbon\Carbon::now('Africa/Cairo');
+    //                 $order->discount = $request->discount;
+    //                 $order->type = 2;
+    //                 $order->status = 1;
+    //                 $order->note = $request->note;
+    //                 $order->save();
+
+    //                 if ($request->has('product_id')) {
+    //                     $this->saveOrderItems($request, $order->id);
+    //                 }
+    //             } else {
+    //                 if ($request->has('product_id')) {
+    //                     $order_exite->update(['note' => $request->note ]);
+    //                     $this->updateOrderItems($request, $order_exite);
+    //                 }
+    //             }
+    //         } else {
+    //             $products = OrderSale::where('order_number', $request->order_number)->delete();
+    //             return redirect()->back()->with('error', 'خطـأ بتسجيل الأوردر برجـــاء تحديد الطلـب  ( طاولة أو روم) واختيار المنتجات');
+    //         }
+
+    //         $products = OrderSale::where('order_number', $request->order_number)->delete();
+
+    //         DB::commit();
+    //         return redirect()->back()->with('success', 'Added Successfully');
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
+    //     }
+    // }
     public function store(Request $request)
     {
+        // return $request;
         DB::beginTransaction();
 
         try {
@@ -62,7 +130,7 @@ class OrderController extends Controller
                     $order->client_id = $request->client_id;
                     $order->service_id = $request->table_id;
                     $order->discount = $request->discount;
-                    $order->total_price = $request->total_price ?? $this->calculateTotalPrice($request->product_id);
+                    $order->total_price = $this->calculateTotalPrice($request->product_id, $request->qty);
                     $order->type = 1;
                     $order->status = 1;
                     $order->note = $request->note;
@@ -70,7 +138,7 @@ class OrderController extends Controller
 
                     $this->saveOrderItems($request, $order->id);
                 } else {
-                    $order_exite->update(['note' => $request->note ]);
+                    $order_exite->update(['note' => $request->note]);
                     $this->updateOrderItems($request, $order_exite);
                 }
             } elseif ($request->room_id !== null) {
@@ -85,6 +153,7 @@ class OrderController extends Controller
                     $order->service_id = $request->room_id;
                     $order->start_time = \Carbon\Carbon::now('Africa/Cairo');
                     $order->discount = $request->discount;
+                    $order->total_price = $this->calculateTotalPrice($request->product_id, $request->qty);
                     $order->type = 2;
                     $order->status = 1;
                     $order->note = $request->note;
@@ -95,12 +164,12 @@ class OrderController extends Controller
                     }
                 } else {
                     if ($request->has('product_id')) {
-                        $order_exite->update(['note' => $request->note ]);
+                        $order_exite->update(['note' => $request->note]);
                         $this->updateOrderItems($request, $order_exite);
                     }
                 }
             } else {
-                $products = OrderSale::where('order_number', $request->order_number)->delete();
+                DB::table('order_sales')->truncate();
                 return redirect()->back()->with('error', 'خطـأ بتسجيل الأوردر برجـــاء تحديد الطلـب  ( طاولة أو روم) واختيار المنتجات');
             }
 
@@ -114,17 +183,8 @@ class OrderController extends Controller
         }
     }
 
-private function calculateTotalPrice($productIds)
-{
-    $total = 0;
-    foreach ($productIds as $productId) {
-        $product = Product::find($productId);
-        if ($product) {
-            $total += $product->price;
-        }
-    }
-    return $total;
-}
+
+
 
 private function saveOrderItems($request, $orderId)
 {
@@ -150,56 +210,157 @@ private function saveOrderItems($request, $orderId)
     }
 }
 
+// private function updateOrderItems($request, $order_exite)
+// {
+//     $countItems = count($request->product_id);
+//     for ($i = 0; $i < $countItems; $i++) {
+//         $prod = Product::find($request->product_id[$i]);
+//         $order_exite->update(['total_price' => $order_exite->total_price + $prod->price]);
+
+//         $orderItem = OrderItem::where('order_id', $order_exite->id)
+//                               ->where('product_id', $request->product_id[$i])
+//                               ->first();
+
+//         if ($orderItem && $request->row_note == null) {
+//             // Update the existing order item
+//                 // dd($orderItem);
+//             $orderItem->qty += $request->qty;
+//             $orderItem->total_cost = $orderItem->qty * $prod->price;
+//         //    $orderItem->note = $request->note;
+//             $orderItem->save();
+//         } else {
+//                 // dd($request);
+//             // Create a new order item
+//             // $orderItem = OrderItem::create([
+//             //     'order_id' => $order_exite->id,
+//             //     'product_id' => $request->row_product_id[$i],
+//             //     'qty' => $request->qty[$i] ?? 1,
+//             //     'price' => $prod->price,
+//             //     'total_cost' => $prod->price * ($request->qty ?? 1)
+//             // ]);
+//             if($request->row_note){
+//             $orderItem = OrderItem::create([
+//                 'order_id' => $order_exite->id,
+//                 'product_id' => $request->product_id[$i],
+//                 'qty' => $request->qty[$i] ?? 1,
+//                 'price' => $prod->price,
+//                 'total_cost' => $prod->price * ($request->qty[$i] ?? 1),
+//                 'note' => $request->row_note[$i]
+//             ]);
+//             }else {
+//                 $orderItem = OrderItem::create([
+//                 'order_id' => $order_exite->id,
+//                 'product_id' => $request->product_id[$i],
+//                 'qty' => $request->qty[$i] ?? 1,
+//                 'price' => $prod->price,
+//                 'total_cost' => $prod->price * ($request->qty[$i] ?? 1),
+//             ]);
+//             }
+
+//         }
+//     }
+// }
+// private function updateOrderItems($request, $order_exite)
+// {
+//     $countItems = count($request->product_id);
+//     for ($i = 0; $i < $countItems; $i++) {
+//         $prod = Product::find($request->product_id[$i]);
+
+//         $orderItem = OrderItem::where('order_id', $order_exite->id)
+//                               ->where('product_id', $request->product_id[$i])
+//                               ->first();
+
+//         if ($orderItem && empty($request->row_note)) {
+//             // Update the existing order item
+//             $orderItem->qty += $request->qty[$i];
+//             $orderItem->total_cost = $orderItem->qty * $prod->price;
+//             $orderItem->save();
+//         } else {
+//             // Create a new order item
+//             $orderItemData = [
+//                 'order_id' => $order_exite->id,
+//                 'product_id' => $request->product_id[$i],
+//                 'qty' => $request->qty[$i] ?? 1,
+//                 'price' => $prod->price,
+//                 'total_cost' => $prod->price * ($request->qty[$i] ?? 1),
+//             ];
+
+//             if (!empty($request->row_note[$i])) {
+//                 $orderItemData['note'] = $request->row_note[$i];
+//             }
+
+//             $orderItem = OrderItem::create($orderItemData);
+//         }
+//     }
+//         // Update the order total price with just the product price
+//         $order_exite->total_price += $request->total_price;
+//         $order_exite->save();
+// }
 private function updateOrderItems($request, $order_exite)
 {
     $countItems = count($request->product_id);
+    $totalProductPrice = 0;
+
     for ($i = 0; $i < $countItems; $i++) {
         $prod = Product::find($request->product_id[$i]);
-        $order_exite->update(['total_price' => $order_exite->total_price + $prod->price]);
 
         $orderItem = OrderItem::where('order_id', $order_exite->id)
                               ->where('product_id', $request->product_id[$i])
                               ->first();
 
-        if ($orderItem && $request->row_note == null) {
+        if ($orderItem && empty($request->row_note)) {
             // Update the existing order item
-                // dd($orderItem);
-            $orderItem->qty += $request->qty;
+            $orderItem->qty += $request->qty[$i];
             $orderItem->total_cost = $orderItem->qty * $prod->price;
-        //    $orderItem->note = $request->note;
             $orderItem->save();
         } else {
-                // dd($request);
             // Create a new order item
-            // $orderItem = OrderItem::create([
-            //     'order_id' => $order_exite->id,
-            //     'product_id' => $request->row_product_id[$i],
-            //     'qty' => $request->qty[$i] ?? 1,
-            //     'price' => $prod->price,
-            //     'total_cost' => $prod->price * ($request->qty ?? 1)
-            // ]);
-            if($request->row_note){
-            $orderItem = OrderItem::create([
+            $orderItemData = [
                 'order_id' => $order_exite->id,
                 'product_id' => $request->product_id[$i],
                 'qty' => $request->qty[$i] ?? 1,
                 'price' => $prod->price,
                 'total_cost' => $prod->price * ($request->qty[$i] ?? 1),
-                'note' => $request->row_note[$i]
-            ]);
-            }else {
-                $orderItem = OrderItem::create([
-                'order_id' => $order_exite->id,
-                'product_id' => $request->product_id[$i],
-                'qty' => $request->qty[$i] ?? 1,
-                'price' => $prod->price,
-                'total_cost' => $prod->price * ($request->qty[$i] ?? 1),
-            ]);
+            ];
+
+            if (!empty($request->row_note[$i])) {
+                $orderItemData['note'] = $request->row_note[$i];
             }
 
+            $orderItem = OrderItem::create($orderItemData);
         }
+
+        $totalProductPrice += $prod->price * ($request->qty[$i] ?? 1);
     }
+
+    $order_exite->total_price += $totalProductPrice;
+
+    // if ($order_exite->end_time) {
+    //     // Calculate the play time price
+    //     $startTime = \Carbon\Carbon::parse($order_exite->start_time);
+    //     $endTime = \Carbon\Carbon::parse($order_exite->end_time);
+    //     $durationInSeconds = $startTime->diffInSeconds($endTime);
+    //     $pricePerHour = $order_exite->service->ps_price;
+    //     $totalPlayPrice = intval(($durationInSeconds / 3600) * $pricePerHour);
+
+    //     $order_exite->total_price += $totalPlayPrice;
+    // }
+
+    $order_exite->save();
 }
+
+private function calculateTotalPrice($product_ids, $quantities)
+{
+    $total = 0;
+    for ($i = 0; $i < count($product_ids); $i++) {
+        $product = Product::find($product_ids[$i]);
+        $total += $product->price * ($quantities[$i] ?? 1);
+    }
+    return $total;
+}
+
+
+
 
     /**
      * Store a newly created resource in storage.
@@ -384,12 +545,41 @@ private function updateOrderItems($request, $order_exite)
         return redirect()->route('orders.index')->with('success', 'Deleted Successfully');
     }
 
-    public function closeTime($id)
-    {
+public function closeTime($id)
+{
+    DB::beginTransaction();
+
+    try {
         $order_room = Order::findOrFail($id);
-        $order_room->update(['end_time' => now()->tz('Africa/Cairo')]);
+        $endTime = now()->tz('Africa/Cairo');
+        $order_room->update(['end_time' => $endTime]);
+
+        // Calculate the play time price
+        if ($order_room->start_time && $order_room->service->ps_price) {
+            $startTime = \Carbon\Carbon::parse($order_room->start_time);
+            $durationInSeconds = $startTime->diffInSeconds($endTime);
+            $pricePerHour = $order_room->service->ps_price;
+            $totalPlayPrice = intval(($durationInSeconds / 3600) * $pricePerHour);
+
+            // Add the play time price to the total price
+            $order_room->total_price += $totalPlayPrice;
+            $order_room->save();
+        }
+
+        DB::commit();
         return redirect()->back()->with('success', 'Time Stopped Successfully');
+    } catch (Exception $e) {
+        DB::rollBack();
+        return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
     }
+}
+
+    // public function closeTime($id)
+    // {
+    //     $order_room = Order::findOrFail($id);
+    //     $order_room->update(['end_time' => now()->tz('Africa/Cairo')]);
+    //     return redirect()->back()->with('success', 'Time Stopped Successfully');
+    // }
     public function fetchBlock(Request $request)
     {
         $empty = Order::get();

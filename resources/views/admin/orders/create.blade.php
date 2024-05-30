@@ -28,7 +28,7 @@
     {{-- @include('admin.classes.paymodal') --}}
     <div>
 
-        <div class="row" style="justify-content: center;">
+        <div class="row" style="justify-content: right;">
             {{-- <div class="col-xl-5 col-lg-4">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between">
@@ -59,100 +59,126 @@
     </div>
 </div>
 </div> --}}
-<div class="col-xl-7 col-lg-8">
-    <div class="card">
-        <div class="card-header d-flex justify-content-between">
-            <div class="header-title">
-                <h4 class="card-title">تسجيل أوردر : #{{ $order_number }}</h4>
-            </div>
-        </div>
-        <hr class="hr-horizontal">
-        <div class="card-body">
-            <div class="new-user-info">
-                <form action="{{route('orders.store')}}" method="post" enctype="multipart/form-data">
-                    @csrf
-                    <input type="hidden" value="{{ $order_number }}" name="order_number">
-                    <div class="row">
-                        <div class="col">
-                            <label class="form-label" for="email">اسم العميل :</label>
-                            <select class="form-control" name="client_id">
-                                {{-- <option value="">العميل</option> --}}
-                                @foreach ($clients as $client)
-                                <option value="{{$client->id}}">
-                                    {{$client->name}}
-                                </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col">
-                            <label class="form-label" for="email"> الطاولة :</label>
-                            <select class="form-control" name="table_id">
-                                <option value="">الطاولات</option>
-                                @foreach ($tabels as $table)
-                                <option value="{{$table->id}}" {{(old($table->id)==$table->id)?
-                                    'selected':''}}>
-                                    {{$table->name}}
-                                </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col">
-                            <label class="form-label" for="email"> الرومات :</label>
-                            <select class="form-control" name="room_id">
-                                <option value="">الرومات</option>
-                                @foreach ($rooms as $room)
-                                <option value="{{$room->id}}" {{(old($room->id)==$room->id)?
-                                    'selected':''}}>
-                                    {{$room->name}}
-                                </option>
-                                @endforeach
-                            </select>
-                        </div>
+{{-- start card order --}}
+<form action="{{route('orders.store')}}" method="post" enctype="multipart/form-data">
+    @csrf
+    <div class="row">
+        <div class="col-xl-6 col-lg-8" style="padding-right: 0px;">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <div class="header-title">
+                        <h4 class="card-title">تسجيل أوردر : #{{ $order_number }}</h4>
                     </div>
-                    <div id="block">
+                </div>
+                <hr class="hr-horizontal">
+                <div class="card-body">
+                    <div class="new-user-info">
+                        {{-- <form action="{{route('orders.store')}}" method="post" enctype="multipart/form-data">
+                        @csrf --}}
+                        <input type="hidden" value="{{ $order_number }}" name="order_number">
                         <div class="row">
                             <div class="col">
-                                <label class="form-label" for="email">المنتج :</label><br>
-                                <select id="row_product_id" class="js-example-basic-multiple form-control"
-                                    multiple="multiple" name="row_product_id[]" />
-                                {{-- <option value="" disabled>المنتجــات</option> --}}
-                                @foreach ($products as $product)
-                                <option value="{{$product->id}}" {{(old($product->id)==$product->id)?
-                                    'selected':''}}>
-                                    {{$product->name}}
-                                </option>
-                                @endforeach
+                                <label class="form-label" for="email">اسم العميل :</label>
+                                <select class="form-control" name="client_id">
+                                    {{-- <option value="">العميل</option> --}}
+                                    @foreach ($clients as $client)
+                                    <option value="{{$client->id}}">
+                                        {{$client->name}}
+                                    </option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="col">
-                                <label class="form-label" for="email"> الكمية :</label>
-                                <input id="qty" type="number" min="1" class="form-control" placeholder="الكمية"
-                                    name="qty" value="1" />
+                                <label class="form-label" for="email"> الطاولة :</label>
+                                <select class="form-control" name="table_id">
+                                    <option value="">الطاولات</option>
+                                    @foreach ($tabels as $table)
+                                    <option value="{{$table->id}}" {{(old($table->id)==$table->id)?
+                                        'selected':''}}>
+                                        {{$table->name}}
+                                    </option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div class="col">
-                                <label class="form-label" style="padding-bottom: 47px;"></label>
-                                <x-dashboard.a-create id="addbutton" onclick="addFunction()">
-                                </x-dashboard.a-create>
+                                <label class="form-label" for="email"> الرومات :</label>
+                                <select class="form-control" name="room_id">
+                                    <option value="">الرومات</option>
+                                    @foreach ($rooms as $room)
+                                    <option value="{{$room->id}}" {{(old($room->id)==$room->id)?
+                                        'selected':''}}>
+                                        {{$room->name}}
+                                    </option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
-                        <br>
-                        <div class="table-responsive" style="max-height: 30%;">
-                            {{-- <div id="duplicate">
+                        <div id="block">
+                            <div class="row">
+                                <div class="col">
+                                    <label class="form-label" for="email">المنتج :</label><br>
+                                    <select id="row_product_id" class="js-example-basic-multiple form-control"
+                                        multiple="multiple" name="row_product_id[]" style="width: 275px;" />
+                                    {{-- <option value="" disabled>المنتجــات</option> --}}
+                                    @foreach ($products as $product)
+                                    <option value="{{$product->id}}" {{(old($product->id)==$product->id)?
+                                        'selected':''}}>
+                                        {{$product->name}}
+                                    </option>
+                                    @endforeach
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <label class="form-label" for="email"> الكمية :</label>
+                                    <input id="qty" type="number" min="1" class="form-control" placeholder="الكمية"
+                                        name="qty" value="1" />
+                                </div>
+                                <div class="col">
+                                    <label class="form-label" style="padding-bottom: 47px;"></label>
+                                    <x-dashboard.a-create id="addbutton" onclick="addFunction()" style="    width: 99px;">
+                                    </x-dashboard.a-create>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="table-responsive" style="max-height: 30%;">
+                                {{-- <div id="duplicate">
 
                     </div> --}}
 
-                            <div id="duplicate">
+                                {{-- <div id="duplicate">
 
+                            </div> --}}
                             </div>
                         </div>
+                        <button type="submit" class="btn btn-primary">تسجيل أوردر</button>
+                        <hr>
+                        <textarea type="text" class="form-label" name="note"
+                            placeholder="اضافة ملاحظات للأوردر"></textarea>
+                        {{-- </form> --}}
                     </div>
-                    <button type="submit" class="btn btn-primary">تسجيل أوردر</button><hr>
-                    <textarea type="text" class="form-label" name="note" placeholder="اضافة ملاحظات للأوردر"></textarea>
-                </form>
+                </div>
+            </div>
+        </div>
+        {{-- end card order --}}
+        {{-- start card items --}}
+        <div class="col-xl-6 col-lg-8" style="padding-right: 0px;">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <div class="header-title">
+                        <h4 class="card-title">تفاصيل الأوردر : #{{ $order_number }}</h4>
+                    </div>
+                </div>
+                <hr class="hr-horizontal">
+                <div class="card-body" style="padding-right: 0px;">
+                    <div id="duplicate">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</form>
+{{-- end card items --}}
+
 </div>
 
 <hr>

@@ -2,26 +2,26 @@
 <table id="block-table" class="table table-striped" style="display:none;" role="grid">
     <thead>
         <tr class="light">
-            <th class="text-center">#</th>
+            {{-- <th class="text-center">#</th> --}}
             <th>المنتج</th>
             <th>الكمية</th>
             <th>السعر</th>
             <th>الاجمالي</th>
             <th>ملاحظة</th>
-            <th></th>
+            <th style="width: 0px;"></th>
         </tr>
     </thead>
     <tbody>
-        <input type="text" id="total_price" value="{{ $products->sum('total_cost') }}" name="total_price" readonly>
+        <input type="hidden" id="total_price" value="{{ $products->sum('total_cost') }}" name="total_price" readonly>
 
         @foreach($products as $index=>$product)
         <tr>
-            <td>{{ $index + 1 }} <input type="hidden" name="product_id[]" value="{{ $product->product_id }}" /></td>
+            {{-- <td>{{ $index + 1 }} <input type="hidden" name="product_id[]" value="{{ $product->product_id }}" /></td> --}}
             <td>{{ $product->product->name }}</td>
             <td><input type="number" min="1" name="qty[]" data-id="{{ $product->id }}" style="width:60px" class="form-control qty" autocomplete="off" value="{{ $product->qty }}"></td>
             <td> {{ $product->price }} <input type="hidden" class="item_price" value="{{ $product->price }}" /></td>
             <td class="price">{{ $product->total_cost }}</td>
-            <td><input type="text" name="row_note[]" value="{{ $product->note }}" class="form-control"></td>
+            <td><input type="text" name="row_note[]" value="{{ $product->note }}" class="form-control" style="    width: 104px;"></td>
             <td class="no-print"><button type="button" data-id="{{ $product->id }}" class="btn btn-danger delete_order_item delete" style="padding: 0px;"><i class="glyphicon glyphicon-trash"></i> <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
                         <path d="M19.3248 9.46826C19.3248 9.46826 18.7818 16.2033 18.4668 19.0403C18.3168 20.3953 17.4798 21.1893 16.1088 21.2143C13.4998 21.2613 10.8878 21.2643 8.27979 21.2093C6.96079 21.1823 6.13779 20.3783 5.99079 19.0473C5.67379 16.1853 5.13379 9.46826 5.13379 9.46826" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
                         <path d="M20.708 6.23975H3.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>

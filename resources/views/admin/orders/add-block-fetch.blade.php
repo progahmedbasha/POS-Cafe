@@ -2,7 +2,7 @@
 <table id="block-table" class="table table-striped" style="display:none;" role="grid">
     <thead>
         <tr class="light">
-            {{-- <th class="text-center">#</th> --}}
+            <th class="text-center">#</th>
             <th>المنتج</th>
             <th>الكمية</th>
             <th>السعر</th>
@@ -16,7 +16,7 @@
 
         @foreach($products as $index=>$product)
         <tr>
-            {{-- <td>{{ $index + 1 }} <input type="hidden" name="product_id[]" value="{{ $product->product_id }}" /></td> --}}
+            <td>{{ $index + 1 }} <input type="hidden" name="product_id[]" value="{{ $product->product_id }}" /></td>
             <td>{{ $product->product->name }}</td>
             <td><input type="number" min="1" name="qty[]" data-id="{{ $product->id }}" style="width:60px" class="form-control qty" autocomplete="off" value="{{ $product->qty }}"></td>
             <td> {{ $product->price }} <input type="hidden" class="item_price" value="{{ $product->price }}" /></td>

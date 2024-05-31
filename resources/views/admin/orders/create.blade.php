@@ -344,10 +344,12 @@
                                        <circle opacity="0.89" cx="13.5" cy="10.5" r="1.5" fill="white"></circle>
                                     </svg>
                                  </button>
+                                 @if (empty($active_room->end_time))
                                  <a href="{{ route('close_time', $active_room->id) }}"
                                     class="btn btn-sm btn-icon btn-warning">
                                  انهاء الوقت
                                  </a>
+                                 @endif
                                  {{-- to print captin order  --}}
                                  <a href="#" class="btn btn-sm btn-icon btn-danger" style="font-size:xx-small;"
                                     onclick='openmodlePrintCaptinOrder("{{route("print_table_captin_order",["id" => $active_room->id] ) }}")'>Captin<br>Order

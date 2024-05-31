@@ -231,6 +231,11 @@
                                  <a href="#" class="btn btn-sm btn-icon btn-danger" style="font-size:xx-small;"
                                     onclick='openmodlePrintCaptinOrder("{{route("print_table_captin_order",["id" => $active_table->id] ) }}")'>Captin<br>Order
                                  </a>
+                                 {{-- to print new item captin order --}}
+                                 <a href="#" class="btn btn-sm btn-icon btn-warning" style="font-size:xx-small;"
+                                    onclick='openmodlePrintCaptinOrderNewItems("{{route("print_table_captin_order_new_items",["id" => $active_table->id] ) }}")'>جديد<br>طياعة
+                                 </a>
+                                 {{-- to print and close order --}}
                                  <a href="#" class="btn btn-sm btn-icon btn-danger"
                                     onclick='openmodle("{{route("print_table",["id" => $active_table->id] ) }}")'>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="1em"
@@ -433,6 +438,9 @@
        }, 5000);
    }
    function openmodlePrintCaptinOrder(url){
+       document.getElementById("iframeCaptinOrder").src=url;
+   }
+   function openmodlePrintCaptinOrderNewItems(url){
        document.getElementById("iframeCaptinOrder").src=url;
    }
 </script>

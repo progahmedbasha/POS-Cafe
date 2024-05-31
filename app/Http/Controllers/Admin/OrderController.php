@@ -647,7 +647,7 @@ public function closeTime($id)
         $new_qty = $request->qty;
         $product = OrderSale::where('id', $request->product_id)->first();
         $old_qty = $product->qty;
-        $product->update(['qty' => $new_qty]);
+        $product->update(['qty' => $new_qty, 'total_cost' => $new_qty * $product->price]);
         $total_price_item = $request->qty * $request->price;
         return response()->json(['status' => true, 'total_price_item' => $total_price_item]);
     }
@@ -679,5 +679,15 @@ public function closeTime($id)
         return response()->json([
             'success' => 'Record deleted successfully!',
         ]);
+    }
+    public function updateNoteAjax(Request $request)
+    {
+        $orderItem = OrderSale::where('id', $request->product_id)->first();
+        if ($orderItem) {
+            $orderItem->note = $request->note;
+            $orderItem->save();
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false], 404);
     }
 }

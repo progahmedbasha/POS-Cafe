@@ -403,47 +403,82 @@ private function saveOrderItems($request, $orderId)
 //     $order_exite->total_price += $totalProductPrice;
 //     $order_exite->save();
 // }
+// private function updateOrderItems($request, $order_exite)
+// {
+//     $countItems = count($request->product_id);
+//     $totalProductPrice = 0;
+
+//     for ($i = 0; $i < $countItems; $i++) {
+//         $prod = Product::find($request->product_id[$i]);
+
+//         // Check if the order item already exists
+//         $orderItem = OrderItem::where('order_id', $order_exite->id)
+//                               ->where('product_id', $request->product_id[$i])
+//                               ->first();
+
+//         if ($orderItem && empty($request->row_note[$i])) {
+//             // Update the existing order item
+//             $orderItem->qty += $request->qty[$i];
+//             $orderItem->total_cost = $orderItem->qty * $prod->price;
+//             // $orderItem->new_item_status = 0; // Update existing item status
+//             $orderItem->save();
+//         } else {
+//             // Set new_item_status to null for all existing items with new_item_status = 1
+//             OrderItem::where('order_id', $order_exite->id)
+//                      ->where('new_item_status', 1)
+//                      ->update(['new_item_status' => null]);
+
+//             // Create a new order item
+//             $orderItemData = [
+//                 'order_id' => $order_exite->id,
+//                 'product_id' => $request->product_id[$i],
+//                 'qty' => $request->qty[$i] ?? 1,
+//                 'price' => $prod->price,
+//                 'total_cost' => $prod->price * ($request->qty[$i] ?? 1),
+//                 'new_item_status' => 1 // Set new item status to 1
+//             ];
+
+//             if (!empty($request->row_note[$i])) {
+//                 $orderItemData['note'] = $request->row_note[$i];
+//             }
+
+//             OrderItem::create($orderItemData);
+//         }
+
+//         $totalProductPrice += $prod->price * ($request->qty[$i] ?? 1);
+//     }
+
+//     $order_exite->total_price += $totalProductPrice;
+//     $order_exite->save();
+// }
 private function updateOrderItems($request, $order_exite)
 {
     $countItems = count($request->product_id);
     $totalProductPrice = 0;
 
+    // Set new_item_status to null for all existing items with new_item_status = 1
+    OrderItem::where('order_id', $order_exite->id)
+             ->where('new_item_status', 1)
+             ->update(['new_item_status' => null]);
+
     for ($i = 0; $i < $countItems; $i++) {
         $prod = Product::find($request->product_id[$i]);
 
-        // Check if the order item already exists
-        $orderItem = OrderItem::where('order_id', $order_exite->id)
-                              ->where('product_id', $request->product_id[$i])
-                              ->first();
+        // Always create a new order item
+        $orderItemData = [
+            'order_id' => $order_exite->id,
+            'product_id' => $request->product_id[$i],
+            'qty' => $request->qty[$i] ?? 1,
+            'price' => $prod->price,
+            'total_cost' => $prod->price * ($request->qty[$i] ?? 1),
+            'new_item_status' => 1 // Set new item status to 1
+        ];
 
-        if ($orderItem && empty($request->row_note[$i])) {
-            // Update the existing order item
-            $orderItem->qty += $request->qty[$i];
-            $orderItem->total_cost = $orderItem->qty * $prod->price;
-            $orderItem->new_item_status = 0; // Update existing item status
-            $orderItem->save();
-        } else {
-            // Set new_item_status to null for all existing items with new_item_status = 1
-            OrderItem::where('order_id', $order_exite->id)
-                     ->where('new_item_status', 1)
-                     ->update(['new_item_status' => null]);
-
-            // Create a new order item
-            $orderItemData = [
-                'order_id' => $order_exite->id,
-                'product_id' => $request->product_id[$i],
-                'qty' => $request->qty[$i] ?? 1,
-                'price' => $prod->price,
-                'total_cost' => $prod->price * ($request->qty[$i] ?? 1),
-                'new_item_status' => 1 // Set new item status to 1
-            ];
-
-            if (!empty($request->row_note[$i])) {
-                $orderItemData['note'] = $request->row_note[$i];
-            }
-
-            OrderItem::create($orderItemData);
+        if (!empty($request->row_note[$i])) {
+            $orderItemData['note'] = $request->row_note[$i];
         }
+
+        OrderItem::create($orderItemData);
 
         $totalProductPrice += $prod->price * ($request->qty[$i] ?? 1);
     }
@@ -451,6 +486,9 @@ private function updateOrderItems($request, $order_exite)
     $order_exite->total_price += $totalProductPrice;
     $order_exite->save();
 }
+
+
+
 
 
 

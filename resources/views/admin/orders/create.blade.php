@@ -352,6 +352,10 @@
                                  <a href="#" class="btn btn-sm btn-icon btn-danger" style="font-size:xx-small;"
                                     onclick='openmodlePrintCaptinOrder("{{route("print_table_captin_order",["id" => $active_room->id] ) }}")'>Captin<br>Order
                                  </a>
+                                 {{-- to print new item captin order --}}
+                                 <a href="#" class="btn btn-sm btn-icon btn-warning" style="font-size:xx-small;"
+                                    onclick='openmodlePrintCaptinOrderNewItems("{{route("print_table_captin_order_new_items",["id" => $active_room->id] ) }}")'>جديد<br>طياعة
+                                 </a>
                                  @if ($active_room->end_time != null)
                                  <a href="#" class="btn btn-sm btn-icon btn-danger"
                                     onclick='openmodle("{{route("print_room",["id" => $active_room->id] ) }}")'>

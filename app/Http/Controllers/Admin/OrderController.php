@@ -780,16 +780,14 @@ public function closeTime($id)
     {
         $orderItem = OrderItem::find($request->item_id);
         $origin_order = $orderItem->order;
+        // minis toatal from origin order
+        $origin_order->update(['total_price' => $origin_order->total_price - $orderItem->total_cost]);
         $orderItem->delete();
         // Check if the associated Order doesn't have any more OrderItems
         if ($orderItem->order->whereDoesntHave('orderItems')->where('type', 1)->exists()) {
             // Delete the Order
             $orderItem->order->delete();
         }
-        // return ($origin_order);
-        // if($origin_order->$orderItem->count() == 1){
-        //     return 33;
-        // }
         return response()->json([
             'success' => 'Record deleted successfully!',
         ]);

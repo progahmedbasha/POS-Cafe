@@ -36,6 +36,7 @@ Route::group(
             Route::get('print_table/{id}', [OrderController::class, 'printTable'])->name('print_table');
             Route::get('print_table_captin_order/{id}', [OrderController::class, 'printTableCaptinOrder'])->name('print_table_captin_order');
             // Route::get('print_table_captin_order/{id}', [OrderController::class, 'printTableCaptinOrder'])->name('print_table_captin_order');
+            Route::get('print_table_captin_order_new_items/{id}', [OrderController::class, 'printTableCaptinOrderNewItems'])->name('print_table_captin_order_new_items');
             Route::get('print_room/{id}', [OrderController::class, 'printRoom'])->name('print_room');
             Route::post('update_qty_ajax', [OrderController::class, 'updateQtyAjax'])->name('update_qty_ajax');
             Route::post('/update-note-ajax', [OrderController::class, 'updateNoteAjax'])->name('update_note_ajax');

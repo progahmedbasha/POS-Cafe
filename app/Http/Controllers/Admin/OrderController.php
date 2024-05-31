@@ -297,6 +297,58 @@ private function saveOrderItems($request, $orderId)
 //         $order_exite->total_price += $request->total_price;
 //         $order_exite->save();
 // }
+// private function updateOrderItems($request, $order_exite)
+// {
+//     $countItems = count($request->product_id);
+//     $totalProductPrice = 0;
+
+//     for ($i = 0; $i < $countItems; $i++) {
+//         $prod = Product::find($request->product_id[$i]);
+
+//         $orderItem = OrderItem::where('order_id', $order_exite->id)
+//                               ->where('product_id', $request->product_id[$i])
+//                               ->first();
+
+//         if ($orderItem && empty($request->row_note)) {
+//             // Update the existing order item
+//             $orderItem->qty += $request->qty[$i];
+//             $orderItem->total_cost = $orderItem->qty * $prod->price;
+//             $orderItem->save();
+//         } else {
+//             // Create a new order item
+//             $orderItemData = [
+//                 'order_id' => $order_exite->id,
+//                 'product_id' => $request->product_id[$i],
+//                 'qty' => $request->qty[$i] ?? 1,
+//                 'price' => $prod->price,
+//                 'total_cost' => $prod->price * ($request->qty[$i] ?? 1),
+//             ];
+
+//             if (!empty($request->row_note[$i])) {
+//                 $orderItemData['note'] = $request->row_note[$i];
+//             }
+
+//             $orderItem = OrderItem::create($orderItemData);
+//         }
+
+//         $totalProductPrice += $prod->price * ($request->qty[$i] ?? 1);
+//     }
+
+//     $order_exite->total_price += $totalProductPrice;
+
+//     // if ($order_exite->end_time) {
+//     //     // Calculate the play time price
+//     //     $startTime = \Carbon\Carbon::parse($order_exite->start_time);
+//     //     $endTime = \Carbon\Carbon::parse($order_exite->end_time);
+//     //     $durationInSeconds = $startTime->diffInSeconds($endTime);
+//     //     $pricePerHour = $order_exite->service->ps_price;
+//     //     $totalPlayPrice = intval(($durationInSeconds / 3600) * $pricePerHour);
+
+//     //     $order_exite->total_price += $totalPlayPrice;
+//     // }
+
+//     $order_exite->save();
+// }
 private function updateOrderItems($request, $order_exite)
 {
     $countItems = count($request->product_id);
@@ -313,8 +365,21 @@ private function updateOrderItems($request, $order_exite)
             // Update the existing order item
             $orderItem->qty += $request->qty[$i];
             $orderItem->total_cost = $orderItem->qty * $prod->price;
+            $orderItem->new_item_status = 0; // Update existing item status
             $orderItem->save();
         } else {
+
+
+    // First, set new_item_status to null for all items
+        $orderItems = OrderItem::where('order_id', $order_exite->id)
+                              ->where('product_id', $request->product_id[$i])
+                              ->get();
+    foreach($orderItems as $item){
+        if ($orderItem && $item->new_item_status == 1) {
+            $item->new_item_status = null;
+            $item->save();
+        }
+    }
             // Create a new order item
             $orderItemData = [
                 'order_id' => $order_exite->id,
@@ -322,6 +387,7 @@ private function updateOrderItems($request, $order_exite)
                 'qty' => $request->qty[$i] ?? 1,
                 'price' => $prod->price,
                 'total_cost' => $prod->price * ($request->qty[$i] ?? 1),
+                'new_item_status' => 1 // Set new item status to 1
             ];
 
             if (!empty($request->row_note[$i])) {
@@ -335,18 +401,6 @@ private function updateOrderItems($request, $order_exite)
     }
 
     $order_exite->total_price += $totalProductPrice;
-
-    // if ($order_exite->end_time) {
-    //     // Calculate the play time price
-    //     $startTime = \Carbon\Carbon::parse($order_exite->start_time);
-    //     $endTime = \Carbon\Carbon::parse($order_exite->end_time);
-    //     $durationInSeconds = $startTime->diffInSeconds($endTime);
-    //     $pricePerHour = $order_exite->service->ps_price;
-    //     $totalPlayPrice = intval(($durationInSeconds / 3600) * $pricePerHour);
-
-    //     $order_exite->total_price += $totalPlayPrice;
-    // }
-
     $order_exite->save();
 }
 
@@ -628,7 +682,17 @@ public function closeTime($id)
     public function printTableCaptinOrder($id)
     {
         $order = Order::with('orderItems')->findOrFail($id);
-        return view('admin.orders.print-captin-order', compact('order'));
+        $items_order_note = '';
+        return view('admin.orders.print-captin-order', compact('order', 'items_order_note'));
+    }
+    // to print new items captin order
+    public function printTableCaptinOrderNewItems($id)
+    {
+        $order = Order::with(['orderItems' => function ($query) {
+            $query->where('new_item_status', 1);
+        }])->findOrFail($id);
+        $items_order_note = 'منتجات جديده لأوردر قديم';
+        return view('admin.orders.print-captin-order', compact('order', 'items_order_note'));
     }
     public function printRoom($id)
     {

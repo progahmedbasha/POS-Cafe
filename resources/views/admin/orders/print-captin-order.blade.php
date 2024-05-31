@@ -91,9 +91,16 @@
                     </tr>
                     @endforeach
                 </table>
+                {{-- show note for order --}}
                 @if ($order->note !=null)
                 <hr>
                 <h5>ملاحظة : {{ $order->note }}</h5>
+                <hr>
+                @endif
+                {{-- show note for new order items --}}
+                @if ($items_order_note !=null)
+                <hr>
+                <h5>ملاحظة : {{ $items_order_note }}</h5>
                 <hr>
                 @endif
                 <br>

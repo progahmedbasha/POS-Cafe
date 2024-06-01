@@ -45,7 +45,7 @@
         </style>
     </head>
 
-    <body onload="window.print()">
+    <body onload="printAndRedirect()">
         {{--<div class="page">--}}
         <center>
             <div id="elem" style="text-align:center;width:250px;height:auto;font-size:12px;">
@@ -108,3 +108,11 @@
         </center>
         {{--</div>--}}
     </body>
+     <script type="text/javascript">
+        function printAndRedirect() {
+            window.print();
+            setTimeout(function() {
+                window.location.href = "{{ url()->previous() }}";
+            }, 1000);  // Adjust the timeout as necessary
+        }
+    </script>

@@ -27,94 +27,215 @@ class OrderController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        $products = Product::all();
-        $clients = Client::all();
-        $tabels = Service::whereType(1)->get();
-        $rooms = Service::whereType(2)->get();
-        $active_tables = Order::whereType(1)->whereStatus(1)->get();
-        $active_rooms = Order::whereType(2)->whereStatus(1)->get();
-        $empty = Order::get();
-        if ($empty->count() < 1)
-        {
-            $order_number = 1;
-        }
-        else {
-            $order_number = Order::get()->last()->number + 1;
-        }
-        return view('admin.orders.create', compact('products', 'clients', 'tabels', 'rooms', 'active_tables', 'active_rooms', 'order_number'));
+    // public function create()
+    // {
+    //     $products = Product::all();
+    //     $clients = Client::all();
+    //     $tabels = Service::whereType(1)->get();
+    //     $rooms = Service::whereType(2)->get();
+    //     $active_tables = Order::whereType(1)->whereStatus(1)->get();
+    //     $active_rooms = Order::whereType(2)->whereStatus(1)->get();
+    //     $empty = Order::get();
+    //     if ($empty->count() < 1)
+    //     {
+    //         $order_number = 1;
+    //     }
+    //     else {
+    //         $order_number = Order::get()->last()->number + 1;
+    //     }
+    //     return view('admin.orders.create', compact('products', 'clients', 'tabels', 'rooms', 'active_tables', 'active_rooms', 'order_number'));
+    // }
+public function create()
+{
+    $products = Product::all();
+    $clients = Client::all();
+    $tabels = Service::whereType(1)->get();
+    $rooms = Service::whereType(2)->get();
+    $active_tables = Order::whereType(1)->whereStatus(1)->get();
+    $active_rooms = Order::whereType(2)->whereStatus(1)->get();
+    $empty = Order::get();
+
+    if ($empty->count() < 1) {
+        $order_number = 1;
+    } else {
+        $order_number = Order::get()->last()->number + 1;
     }
-    public function store(Request $request)
-    {
-        // return $request;
-        DB::beginTransaction();
 
-        try {
-            if ($request->table_id !== null && $request->has('product_id')) {
-                $order_exite = Order::where('service_id', $request->table_id)->where('status', 1)->first();
+    // Check if there's an order to print
+    if (session()->has('print_order_id')) {
+        $orderId = session('print_order_id');
+        $is_new_order = session('is_new_order', true); // default to true if not set
+        session()->forget(['print_order_id', 'is_new_order']);
 
-                if ($order_exite == null) {
-                    // Create new order if not found service
-                    $order = new Order();
-                    $order->number = $request->order_number;
-                    $order->user_id = auth()->user()->id;
-                    $order->client_id = $request->client_id;
-                    $order->service_id = $request->table_id;
-                    $order->discount = $request->discount;
+        if ($is_new_order) {
+            return $this->printTableCaptinOrder($orderId);
+        } else {
+            return $this->printTableCaptinOrderNewItems($orderId);
+        }
+    }
+
+    return view('admin.orders.create', compact('products', 'clients', 'tabels', 'rooms', 'active_tables', 'active_rooms', 'order_number'));
+}
+
+
+
+    // public function store(Request $request)
+    // {
+    //     // return $request;
+    //     DB::beginTransaction();
+
+    //     try {
+    //         if ($request->table_id !== null && $request->has('product_id')) {
+    //             $order_exite = Order::where('service_id', $request->table_id)->where('status', 1)->first();
+
+    //             if ($order_exite == null) {
+    //                 // Create new order if not found service
+    //                 $order = new Order();
+    //                 $order->number = $request->order_number;
+    //                 $order->user_id = auth()->user()->id;
+    //                 $order->client_id = $request->client_id;
+    //                 $order->service_id = $request->table_id;
+    //                 $order->discount = $request->discount;
+    //                 $order->total_price = $this->calculateTotalPrice($request->product_id, $request->qty);
+    //                 $order->type = 1;
+    //                 $order->status = 1;
+    //                 $order->note = $request->note;
+    //                 $order->save();
+
+    //                 $this->saveOrderItems($request, $order->id);
+    //             } else {
+    //                 $order_exite->update(['note' => $request->note]);
+    //                 $this->updateOrderItems($request, $order_exite);
+    //             }
+    //         } elseif ($request->room_id !== null) {
+    //             $order_exite = Order::where('service_id', $request->room_id)->where('status', 1)->first();
+
+    //             if ($order_exite == null) {
+    //                 // Create new order if not found service
+    //                 $order = new Order();
+    //                 $order->number = $request->order_number;
+    //                 $order->user_id = auth()->user()->id;
+    //                 $order->client_id = $request->client_id;
+    //                 $order->service_id = $request->room_id;
+    //                 $order->start_time = \Carbon\Carbon::now('Africa/Cairo');
+    //                 $order->discount = $request->discount;
+    //                 if($request->has('product_id'))
+    //                 $order->total_price = $this->calculateTotalPrice($request->product_id, $request->qty);
+    //                 $order->type = 2;
+    //                 $order->status = 1;
+    //                 $order->note = $request->note;
+    //                 $order->save();
+
+    //                 if ($request->has('product_id')) {
+    //                     $this->saveOrderItems($request, $order->id);
+    //                 }
+    //             } else {
+    //                 if ($request->has('product_id')) {
+    //                     $order_exite->update(['note' => $request->note]);
+    //                     $this->updateOrderItems($request, $order_exite);
+    //                 }
+    //             }
+    //         } else {
+    //             DB::table('order_sales')->truncate();
+    //             return redirect()->back()->with('error', 'خطـأ بتسجيل الأوردر برجـــاء تحديد الطلـب  ( طاولة أو روم) واختيار المنتجات');
+    //         }
+
+    //         $products = OrderSale::where('order_number', $request->order_number)->delete();
+
+    //         DB::commit();
+    //          // Store order ID in session for printing
+    //     session(['print_order_id' => $order->id]);
+
+    //     // Redirect to the create route
+    //     return redirect()->route('orders.create')->with('success', 'Added Successfully');
+    //     } catch (Exception $e) {
+    //         DB::rollBack();
+    //         return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
+    //     }
+    // }
+public function store(Request $request)
+{
+    // return $request;
+    DB::beginTransaction();
+
+    try {
+        if ($request->table_id !== null && $request->has('product_id')) {
+            $order_exite = Order::where('service_id', $request->table_id)->where('status', 1)->first();
+
+            if ($order_exite == null) {
+                // Create new order if not found service
+                $order = new Order();
+                $order->number = $request->order_number;
+                $order->user_id = auth()->user()->id;
+                $order->client_id = $request->client_id;
+                $order->service_id = $request->table_id;
+                $order->discount = $request->discount;
+                $order->total_price = $this->calculateTotalPrice($request->product_id, $request->qty);
+                $order->type = 1;
+                $order->status = 1;
+                $order->note = $request->note;
+                $order->save();
+
+                $this->saveOrderItems($request, $order->id);
+                
+                // Set session variables for new order
+                session(['print_order_id' => $order->id, 'is_new_order' => true]);
+            } else {
+                $order_exite->update(['note' => $request->note]);
+                $this->updateOrderItems($request, $order_exite);
+
+                // Set session variables for existing order with new items
+                session(['print_order_id' => $order_exite->id, 'is_new_order' => false]);
+            }
+        } elseif ($request->room_id !== null) {
+            $order_exite = Order::where('service_id', $request->room_id)->where('status', 1)->first();
+
+            if ($order_exite == null) {
+                // Create new order if not found service
+                $order = new Order();
+                $order->number = $request->order_number;
+                $order->user_id = auth()->user()->id;
+                $order->client_id = $request->client_id;
+                $order->service_id = $request->room_id;
+                $order->start_time = \Carbon\Carbon::now('Africa/Cairo');
+                $order->discount = $request->discount;
+                if($request->has('product_id'))
                     $order->total_price = $this->calculateTotalPrice($request->product_id, $request->qty);
-                    $order->type = 1;
-                    $order->status = 1;
-                    $order->note = $request->note;
-                    $order->save();
+                $order->type = 2;
+                $order->status = 1;
+                $order->note = $request->note;
+                $order->save();
 
+                if ($request->has('product_id')) {
                     $this->saveOrderItems($request, $order->id);
-                } else {
+                }
+
+                // Set session variables for new order
+                session(['print_order_id' => $order->id, 'is_new_order' => true]);
+            } else {
+                if ($request->has('product_id')) {
                     $order_exite->update(['note' => $request->note]);
                     $this->updateOrderItems($request, $order_exite);
-                }
-            } elseif ($request->room_id !== null) {
-                $order_exite = Order::where('service_id', $request->room_id)->where('status', 1)->first();
 
-                if ($order_exite == null) {
-                    // Create new order if not found service
-                    $order = new Order();
-                    $order->number = $request->order_number;
-                    $order->user_id = auth()->user()->id;
-                    $order->client_id = $request->client_id;
-                    $order->service_id = $request->room_id;
-                    $order->start_time = \Carbon\Carbon::now('Africa/Cairo');
-                    $order->discount = $request->discount;
-                    if($request->has('product_id'))
-                    $order->total_price = $this->calculateTotalPrice($request->product_id, $request->qty);
-                    $order->type = 2;
-                    $order->status = 1;
-                    $order->note = $request->note;
-                    $order->save();
-
-                    if ($request->has('product_id')) {
-                        $this->saveOrderItems($request, $order->id);
-                    }
-                } else {
-                    if ($request->has('product_id')) {
-                        $order_exite->update(['note' => $request->note]);
-                        $this->updateOrderItems($request, $order_exite);
-                    }
+                    // Set session variables for existing order with new items
+                    session(['print_order_id' => $order_exite->id, 'is_new_order' => false]);
                 }
-            } else {
-                DB::table('order_sales')->truncate();
-                return redirect()->back()->with('error', 'خطـأ بتسجيل الأوردر برجـــاء تحديد الطلـب  ( طاولة أو روم) واختيار المنتجات');
             }
-
-            $products = OrderSale::where('order_number', $request->order_number)->delete();
-
-            DB::commit();
-            return redirect()->back()->with('success', 'Added Successfully');
-        } catch (Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
+        } else {
+            DB::table('order_sales')->truncate();
+            return redirect()->back()->with('error', 'خطـأ بتسجيل الأوردر برجـــاء تحديد الطلـب  ( طاولة أو روم) واختيار المنتجات');
         }
+
+        $products = OrderSale::where('order_number', $request->order_number)->delete();
+
+        DB::commit();
+        return redirect()->route('orders.create'); // Redirect to create route
+    } catch (Exception $e) {
+        DB::rollBack();
+        return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
     }
+}
+
 
 
 

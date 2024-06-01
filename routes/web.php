@@ -44,6 +44,7 @@ Route::group(
             Route::delete('item_ajax_destroy', [OrderController::class, 'ItemAjaxDestroy'])->name('item_ajax_destroy');
             Route::resource('invoices', InvoiceController::class);
             Route::resource('rooms', RoomController::class);
+            Route::patch('change_table/{order}', [OrderController::class, 'changeTable'])->name('change_table');
     }
 );
 Route::get('/', function(){

@@ -213,7 +213,7 @@ private function calculateTotalPrice($product_ids, $quantities)
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Product $product)
+    public function edit(Order $order)
     {
          return view('admin.products.edit', compact('product'));
     }
@@ -221,7 +221,7 @@ private function calculateTotalPrice($product_ids, $quantities)
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreProductRequest $request, Product $product)
+    public function update(Request $request, Order $order)
     {
         //
     }
@@ -385,5 +385,10 @@ public function closeTime($id)
             return response()->json(['success' => true]);
         }
         return response()->json(['success' => false], 404);
+    }
+    public function changeTable(Order $order, Request $request)
+    {
+        $order->update(['service_id'=> $request->table_id]);
+        return redirect()->back()->with('success', 'Updated Successfully');
     }
 }

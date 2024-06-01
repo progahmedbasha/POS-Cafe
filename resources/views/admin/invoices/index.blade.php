@@ -119,7 +119,7 @@
                                     <td>{{ $invoice->client->name }}</td>
                                     <td>{{ $invoice->service->name }}</td>
                                     <td>{{ $invoice->total_price }}</td>
-                                    <td>{{ $invoice->created_at }}</td>
+                                    <td>{{ $invoice->updated_at }}</td>
                                     <td>
                                         <div class="flex align-items-center list-user-action" style="display: flex;">
                                             {{-- <x-dashboard.a-edit href="{{ route('orders.edit', $invoice->id) }}">

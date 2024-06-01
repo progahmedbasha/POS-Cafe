@@ -56,7 +56,7 @@
                     <tr>
                         <td>رقم : {{$order->number}}</td>
                         {{-- <td>{{$order->number}}</td> --}}
-                        <td>وقت : {{$order->created_at}}</td>
+                        <td>وقت : {{$order->updated_at}}</td>
                         {{-- <td>{{$order->created_at}}</td> --}}
                     </tr>
                     <tr>

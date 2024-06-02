@@ -428,6 +428,11 @@ public function closeTime($id)
         $order->update(['status' => 2]);
         return view('admin.orders.print', compact('order'));
     }
+    public function printTableReceipt($id)
+    {
+        $order = Order::with('orderItems')->findOrFail($id);
+        return view('admin.orders.print', compact('order'));
+    }
     public function printTableCaptinOrder($id)
     {
         $order = Order::with('orderItems')->findOrFail($id);
@@ -453,6 +458,17 @@ public function closeTime($id)
                 $totalPrice = $durationInSeconds ? intval(($durationInSeconds / 3600) * $price) : 0;
         $total = $totalPrice + $order->orderItems->sum('total_cost');
         $order->update(['status' => 2 , 'total_price' => $total]);
+        return view('admin.orders.print', compact('order'));
+    }
+    public function printRoomReciept($id)
+    {
+        $order = Order::with('orderItems')->findOrFail($id);
+        $startTime = \Carbon\Carbon::parse($order->start_time);
+        $endTime = \Carbon\Carbon::parse($order->end_time);
+        $durationInSeconds = $startTime->diffInSeconds($endTime);
+        $price = $order->service->ps_price;
+        $totalPrice = $durationInSeconds ? intval(($durationInSeconds / 3600) * $price) : 0;
+        $total = $totalPrice + $order->orderItems->sum('total_cost');
         return view('admin.orders.print', compact('order'));
     }
     public function updateQtyAjax (Request $request)

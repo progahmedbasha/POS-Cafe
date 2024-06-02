@@ -93,6 +93,27 @@
 
             </div>
             <div class="modal-footer">
+                <form action="{{ route('change_table', $active_table->id)}}" method="post"
+                    enctype="multipart/form-data">
+                    @csrf
+                    @method('patch')
+                    <div class="row">
+                        <div class="col">
+                            <select class="form-control" name="table_id">
+                                <option value="">الطاولات</option>
+                                @foreach ($tabels as $table)
+                                <option value="{{$table->id}}" {{($active_table->service_id==$table->id)?
+                                    'selected':''}}>
+                                    {{$table->name}}
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col">
+                            <button type="submit" class="btn btn-primary">نقل</button>
+                        </div>
+                    </div>
+                </form>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 {{-- <button type="button" class="btn btn-primary">Save changes</button> --}}
             </div>

@@ -1,4 +1,4 @@
-<aside class="sidebar sidebar-default navs-rounded-all ">
+<aside class="sidebar sidebar-default navs-rounded-all {{ Route::currentRouteName() == 'orders.create' ? 'sidebar-mini' : '' }}">
     <div class="sidebar-header d-flex align-items-center justify-content-start">
         <a href="{{ route('dashboard') }}" class="navbar-brand">
             <!--Logo start-->

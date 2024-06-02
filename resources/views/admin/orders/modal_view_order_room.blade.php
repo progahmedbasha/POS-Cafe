@@ -93,7 +93,7 @@
 
             </div>
             <div class="modal-footer">
-                <form action="{{ route('change_table', $active_table->id)}}" method="post"
+                <form action="{{ route('change_table', $active_room->id)}}" method="post"
                     enctype="multipart/form-data">
                     @csrf
                     @method('patch')
@@ -101,10 +101,10 @@
                         <div class="col">
                             <select class="form-control" name="table_id">
                                 <option value="">الطاولات</option>
-                                @foreach ($tabels as $table)
-                                <option value="{{$table->id}}" {{($active_table->service_id==$table->id)?
+                                @foreach ($rooms as $room)
+                                <option value="{{$room->id}}" {{($active_room->service_id==$room->id)?
                                     'selected':''}}>
-                                    {{$table->name}}
+                                    {{$room->name}}
                                 </option>
                                 @endforeach
                             </select>

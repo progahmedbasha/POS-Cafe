@@ -59,6 +59,19 @@
                                             <div class="alert alert-danger">{{ $message }}</div>
                                             @enderror
                                         </div>
+                                         <div class="form-group">
+                                            <label class="form-label" for="email">التصنيف:</label>
+                                            <select class="form-control" name="category_id">
+                                                <option value="">التصنيف</option>
+                                                @foreach ($categories as $category)
+                                                <option value="{{ $$category->id }}" {{ old('category_id')}}>{{ $category_name }}</option>
+                                                @endforeach
+
+                                            </select>
+                                            @error('category_id')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
                                         <div class="form-group">
                                             <label class="form-label">صورة المنتج :</label>
                                             <input type="file" class="form-control" name="photo" accept="image/*">

@@ -91,7 +91,7 @@ class ProductController extends Controller
     }
     public function SodaMenuIndex()
     {
-        $products = Product::where('category', 'soda')->get();
+        $products = Product::where('category_id', 1)->get();
         return view('website.soda-menu', compact('products'));
     }
 }

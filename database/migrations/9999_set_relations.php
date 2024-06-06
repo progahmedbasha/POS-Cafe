@@ -25,6 +25,9 @@ return new class extends Migration
             $table->foreign('order_id')->references('id')->on('orders')->onUpdate('cascade');
             $table->foreign('product_id')->references('id')->on('products')->onUpdate('cascade');
         });
+        Schema::table('products', function (Blueprint $table) {
+            $table->foreign('category_id')->references('id')->on('categories')->onUpdate('cascade');
+        });
     }
 
     /**

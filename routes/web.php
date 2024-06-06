@@ -53,6 +53,8 @@ Route::get('/', function(){
         return view('website.index');
     })->name('website');
     Route::get('menu' , [ProductController::class, 'menu'])->name('menu');
+    Route::get('soda-menu', [ProductController::class, 'SodaMenuIndex'])->name('soda-menu');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

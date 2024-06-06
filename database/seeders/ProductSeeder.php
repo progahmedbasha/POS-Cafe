@@ -34,17 +34,17 @@ class ProductSeeder extends Seeder
         DB::table('products')->insert([
             'name' => 'soda 1',
             'price' => '200',
-            'category' => 'soda'
+            'category_id' => '1'
         ]);
         DB::table('products')->insert([
             'name' => 'soda 2',
             'price' => '200',
-            'category' => 'soda'
+            'category_id' => '1'
         ]);
         DB::table('products')->insert([
             'name' => 'soda 3',
             'price' => '200',
-            'category' => 'soda'
+            'category_id' => '1'
         ]);
     }
 }

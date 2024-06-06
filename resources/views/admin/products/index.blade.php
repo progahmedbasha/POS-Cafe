@@ -32,6 +32,7 @@
                                     <tr class="ligth">
                                         <th class="text-center">#</th>
                                         <th>اسم المنتج</th>
+                                        <th>التصنيف</th>
                                         <th>الكمية</th>
                                         <th>السعر</th>
                                         <th>صورة المنتج</th>
@@ -43,6 +44,7 @@
                                     <tr>
                                         <td class="text-center">{{ $index+1 }}</td>
                                         <td>{{ $product->name }}</td>
+                                        <td>{{ $product->category ? $product->category->name : '' }}</td>
                                         <td>{{ $product->qty }}</td>
                                         <td>{{ $product->price }}</td>
                                         <td>

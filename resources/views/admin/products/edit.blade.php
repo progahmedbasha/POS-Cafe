@@ -61,6 +61,21 @@
                                             @enderror
                                         </div>
                                         <div class="form-group">
+                                            <label class="form-label" for="email">التصنيف :</label>
+                                            <select class="form-control" name="category_id">
+                                                <option value="">اختر تصنيف</option>
+                                                @foreach ($categories as $category)
+                                                <option value="{{$category->id}}" {{($product->category_id ==
+                                                    $category->id)?'selected':''}}>
+                                                    {{$category->name}}
+                                                </option>
+                                                @endforeach
+                                            </select>
+                                            @error('category_id')
+                                            <div class="alert alert-danger">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="form-group">
                                             <label class="form-label">صورة المنتج :</label>
                                             <div class="row">
                                                 <div class="col">

@@ -83,7 +83,7 @@
                                         <td>
                                             @if(!empty($product->photo))
                                             <img src="{{url($product->image)}}/{{$product->photo }}" class="w3-round"
-                                                width="100px" alt="Norway">
+                                                width="100px" height="100px" style="border-radius: 20px" alt="Norway">
                                             @else
                                             <img src="{{url('/data/error.png')}}" class="w3-round" width="100px"
                                                 alt="Norway">

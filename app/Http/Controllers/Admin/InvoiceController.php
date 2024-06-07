@@ -21,10 +21,43 @@ class InvoiceController extends Controller
             $invoices = $invoices->whereBetween(DB::raw('DATE(updated_at)'), [$request->from, $request->to]);
         if (isset($request->user_id))
             $invoices->where('user_id', $request->user_id);
-        $invoices = $invoices->paginate(config('admin.pagination'));
+        // $invoices = $invoices->paginate(config('admin.pagination'));
+        $invoices = $invoices->where('status', 2)->get();
         $sum = $invoices->sum('total_price');
-        return view('admin.invoices.index', compact('invoices', 'sum', 'users'));
+         $count = $invoices->count();
+        return view('admin.invoices.index', compact('invoices', 'sum', 'users', 'count'));
     }
+// public function index(Request $request)
+// {
+//     // احصل على جميع المستخدمين
+//     $users = User::all();
+
+//     // ابدأ استعلام الفواتير مع جلب المستخدمين المرتبطين
+//     $invoices = Order::with('user');
+
+//     // تحقق من وجود تاريخ البدء وتاريخ الانتهاء في الطلب
+//     if ($request->filled('from') && $request->filled('to')) {
+//         // تحويل التواريخ إلى نهاية اليوم لضمان تضمين اليوم الكامل
+//         $from = $request->from . ' 00:00:00';
+//         $to = $request->to . ' 23:59:59';
+//         $invoices = $invoices->whereBetween('updated_at', [$from, $to]);
+//     }
+
+//     // تحقق من وجود معرف المستخدم في الطلب
+//     if ($request->filled('user_id')) {
+//         $invoices = $invoices->where('user_id', $request->user_id);
+//     }
+
+//     // اجلب الفواتير المصفاة
+//    return $invoices = $invoices->get();
+
+//     // احسب مجموع الأسعار
+//     $sum = $invoices->sum('total_price');
+//         $count = $invoices->count();
+//     // اعرض النتائج في العرض المناسب
+//     return view('admin.invoices.index', compact('invoices', 'sum', 'users', 'count'));
+// }
+
 
     /**
      * Show the form for creating a new resource.

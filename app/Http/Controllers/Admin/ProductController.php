@@ -6,17 +6,38 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreProductRequest;
 use App\Models\Category;
 use App\Models\Product;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::paginate(config('admin.pagination'));
-        return view('admin.products.index', compact('products'));
+        // جلب التصنيفات
+        $categories = Category::get();
+
+        // جلب المنتجات مع البحث
+        $products = Product::query();
+
+        // التحقق من وجود بحث وتطبيقه
+        if ($request->filled('search')) {
+            $products->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        // التحقق من وجود معرف التصنيف وتطبيقه
+        if ($request->filled('category_id')) {
+            $products->where('category_id', $request->category_id);
+        }
+
+        // تطبيق التصفيح
+        $products = $products->paginate(config('admin.pagination'));
+
+        // عرض النتائج في العرض المناسب
+        return view('admin.products.index', compact('products', 'categories'));
     }
+
 
     /**
      * Show the form for creating a new resource.

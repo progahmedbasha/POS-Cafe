@@ -28,6 +28,9 @@ return new class extends Migration
         Schema::table('products', function (Blueprint $table) {
             $table->foreign('category_id')->references('id')->on('categories')->onUpdate('cascade');
         });
+        Schema::table('expenses', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+        });
     }
 
     /**

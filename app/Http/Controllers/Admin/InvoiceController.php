@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Expense;
 use App\Models\Order;
 use App\Models\User;
 use DB;
@@ -17,15 +18,18 @@ class InvoiceController extends Controller
     {
         $invoices = Order::with('user');
         $users = User::all();
-        if (isset($request->from) && isset($request->to))
+        $expenses = 0;
+        if (isset($request->from) && isset($request->to)){
             $invoices = $invoices->whereBetween(DB::raw('DATE(updated_at)'), [$request->from, $request->to]);
+            $expenses = Expense::whereBetween(DB::raw('DATE(updated_at)'), [$request->from, $request->to])->sum('price');
+        }
         if (isset($request->user_id))
             $invoices->where('user_id', $request->user_id);
         // $invoices = $invoices->paginate(config('admin.pagination'));
         $invoices = $invoices->where('status', 2)->get();
         $sum = $invoices->sum('total_price');
          $count = $invoices->count();
-        return view('admin.invoices.index', compact('invoices', 'sum', 'users', 'count'));
+        return view('admin.invoices.index', compact('invoices', 'sum', 'users', 'count', 'expenses'));
     }
 // public function index(Request $request)
 // {

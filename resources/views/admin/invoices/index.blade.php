@@ -19,8 +19,16 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between">
                         <div class="header-title">
-                            <h4 class="card-title"> المدفوعات ({{ $sum }}) </h4>
+                            <h4 class="card-title"> المبيعات ({{ $sum }}) </h4>
                         </div>
+                        @if ($expenses !== 0)
+                        <div class="header-title">
+                            <h4 class="card-title">  المصروفات ({{ $expenses }}) </h4>
+                        </div>
+                        <div class="header-title">
+                            <h4 class="card-title">  الصافي ({{ $sum - $expenses }}) </h4>
+                        </div>
+                        @endif
                         <div class="header-title">
                             <h4 class="card-title"> عدد الفواتير ({{ $count }}) </h4>
                         </div>

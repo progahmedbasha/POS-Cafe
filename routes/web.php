@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\Admin\ExpensesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,6 +47,7 @@ Route::group(
             Route::delete('item_ajax_destroy', [OrderController::class, 'ItemAjaxDestroy'])->name('item_ajax_destroy');
             Route::resource('invoices', InvoiceController::class);
             Route::resource('rooms', RoomController::class);
+            Route::resource('expenses', ExpensesController::class);
             Route::patch('change_table/{order}', [OrderController::class, 'changeTable'])->name('change_table');
     }
 );

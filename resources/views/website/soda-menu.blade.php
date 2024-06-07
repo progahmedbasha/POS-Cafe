@@ -37,7 +37,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Karma", sans-serif}
   <div class="w3-row-padding w3-padding-16 w3-center" id="food">
     @foreach ($products as $product)
     <div class="w3-quarter">
-      <img src="{{url($product->image)}}/{{$product->photo }}" alt="Sandwich" style="width:100%;max-height:500px; border-radius: 150px;">
+      <img src="{{url($product->image)}}/{{$product->photo }}" alt="Sandwich" style="width:100%;max-height:500px; border-radius: 90px;">
       <h3>{{ $product->name }}</h3>
       <h5 style="color: red;">{{ $product->price }} LE</h5>
       {{-- <p>Just some random text, lorem ipsum text praesent tincidunt ipsum lipsum.</p> --}}

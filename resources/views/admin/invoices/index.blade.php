@@ -21,6 +21,9 @@
                         <div class="header-title">
                             <h4 class="card-title"> المدفوعات ({{ $sum }}) </h4>
                         </div>
+                        <div class="header-title">
+                            <h4 class="card-title"> عدد الفواتير ({{ $count }}) </h4>
+                        </div>
                     </div>
                     <div class="card-body px-0">
                         @php
@@ -137,7 +140,7 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        {{ $invoices->links() }}
+                        {{-- {{ $invoices->links() }} --}}
                     </div>
                 </div>
             </div>

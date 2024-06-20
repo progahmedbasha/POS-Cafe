@@ -8,6 +8,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\ExpensesController;
+use App\http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,9 +52,10 @@ Route::group(
             Route::patch('change_table/{order}', [OrderController::class, 'changeTable'])->name('change_table');
     }
 );
-Route::get('/', function(){
-        return view('website.index');
-    })->name('website');
+    // Route::get('/', function(){
+    //     return view('website.index');
+    // })->name('website');
+    Route::get('/' , [HomeController::class, 'website'])->name('website');
     Route::get('menu' , [ProductController::class, 'menu'])->name('menu');
     Route::get('soda-menu', [ProductController::class, 'SodaMenuIndex'])->name('soda-menu');
 

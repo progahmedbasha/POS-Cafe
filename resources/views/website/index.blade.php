@@ -171,7 +171,7 @@
                 <h4 class="text-primary text-uppercase" style="letter-spacing: 5px;">Menu & Pricing</h4>
                 <h1 class="display-4">Competitive Pricing</h1>
             </div>
-            <div class="row">
+            {{-- <div class="row">
                 <div class="col-lg-6">
                     <h1 class="mb-5">Hot Coffee</h1>
                     <div class="row align-items-center mb-5">
@@ -238,7 +238,29 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
+<div class="row">
+    <div class="col-lg-6">
+        <h1 class="mb-5">Hot Coffee</h1>
+        <div class="row">
+            @foreach($products as $product)
+                <div class="col-lg-4 col-md-6 mb-5">
+                    <div class="row align-items-center">
+                        <div class="col-12">
+                            <img class="w-100 rounded-circle mb-3 mb-sm-0" src="{{url($product->image)}}/{{$product->photo }}" alt="">
+                            <h5 class="menu-price">${{ $product->price }}</h5>
+                        </div>
+                        <div class="col-12">
+                            <h4>{{ $product->name }}</h4>
+                            <p class="m-0">{{ $product->description }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</div>
+
         </div>
     </div>
     <!-- Menu End -->

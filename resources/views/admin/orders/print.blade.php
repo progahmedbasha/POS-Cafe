@@ -63,6 +63,16 @@
                         <td>موظف: {{ $order->user->name }}</td>
                         <td>عميل: {{ $order->client->name }}</td>
                     </tr>
+                    <tr>
+                        <td>
+                            @if ($order->type == 1)
+                            طاولة : {{ $order->service->name }}
+                            @endif
+                            @if ($order->type == 2)
+                            Room : {{ $order->service->name }}
+                            @endif
+                        </td>
+                    </tr>
                 </table>
                 <br>
                 <hr>

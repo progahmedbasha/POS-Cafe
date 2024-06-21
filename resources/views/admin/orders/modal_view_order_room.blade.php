@@ -93,7 +93,7 @@
 
             </div>
             <div class="modal-footer">
-                <form action="{{ route('change_table', $active_room->id)}}" method="post"
+                <form action="{{ route('change_room', $active_room->id)}}" method="post"
                     enctype="multipart/form-data">
                     @csrf
                     @method('patch')

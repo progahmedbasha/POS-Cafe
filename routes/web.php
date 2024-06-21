@@ -52,6 +52,7 @@ Route::group(
             Route::resource('tables', TableController::class);
             Route::resource('expenses', ExpensesController::class);
             Route::patch('change_table/{order}', [OrderController::class, 'changeTable'])->name('change_table');
+            Route::patch('change_room/{order}', [OrderController::class, 'changeRoom'])->name('change_room');
     }
 );
     // Route::get('/', function(){

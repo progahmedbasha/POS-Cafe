@@ -51,6 +51,7 @@ public function create()
     $clients = Client::all();
     $tabels = Service::whereType(1)->get();
     $rooms = Service::whereType(2)->get();
+    $services = Service::all();
     $active_tables = Order::whereType(1)->whereStatus(1)->get();
     $active_rooms = Order::whereType(2)->whereStatus(1)->get();
     $empty = Order::get();
@@ -74,7 +75,7 @@ public function create()
         }
     }
 
-    return view('admin.orders.create', compact('products', 'clients', 'tabels', 'rooms', 'active_tables', 'active_rooms', 'order_number'));
+    return view('admin.orders.create', compact('products', 'clients', 'tabels', 'rooms', 'services', 'active_tables', 'active_rooms', 'order_number'));
 }
 
 
@@ -525,7 +526,18 @@ public function closeTime($id)
     }
     public function changeTable(Order $order, Request $request)
     {
-        $order->update(['service_id'=> $request->table_id]);
+        $service = Service::find($request->table_id);
+        if($service->type == 2){
+            $order->update(['service_id'=> $request->table_id, 'start_time' => \Carbon\Carbon::now('Africa/Cairo'),'type' => $service->type]);
+        } else {
+            $order->update(['service_id'=> $request->table_id,'type' => $service->type]);
+        }
+        return redirect()->back()->with('success', 'Updated Successfully');
+    }
+    public function changeRoom(Order $order, Request $request)
+    {
+        $service = Service::find($request->table_id);
+        $order->update(['service_id'=> $request->table_id,'type' => $service->type]);
         return redirect()->back()->with('success', 'Updated Successfully');
     }
 }

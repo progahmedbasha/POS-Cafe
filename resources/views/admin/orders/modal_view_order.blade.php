@@ -71,10 +71,10 @@
                         <div class="col">
                             <select class="form-control" name="table_id">
                                 <option value="">الطاولات</option>
-                                @foreach ($tabels as $table)
-                                <option value="{{$table->id}}" {{($active_table->service_id==$table->id)?
+                                @foreach ($services as $service)
+                                <option value="{{$service->id}}" {{($active_table->service_id==$service->id)?
                                     'selected':''}}>
-                                    {{$table->name}}
+                                    {{$service->name}}
                                 </option>
                                 @endforeach
                             </select>

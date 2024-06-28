@@ -552,8 +552,15 @@ public function closeTime($id)
     }
     public function changeRoom(Order $order, Request $request)
     {
+        // return $order;
         $service = Service::find($request->table_id);
-        $order->update(['service_id'=> $request->table_id,'type' => $service->type]);
+
+        if ($order->type == 2 && $order->orderTimes[0]->end_time == null) {
+            $this->closeTime($order->id);
+            $order->update(['service_id'=> $request->table_id,'type' => $service->type]);
+        } else {
+            $order->update(['service_id'=> $request->table_id,'type' => $service->type]);
+        }
         return redirect()->back()->with('success', 'Updated Successfully');
     }
 }

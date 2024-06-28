@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderSale;
+use App\Models\OrderTime;
 use App\Models\Product;
 use App\Models\Service;
 use DB;
@@ -171,14 +172,17 @@ public function store(Request $request)
                 $order->client_id = $request->client_id;
                 $order->service_id = $request->table_id;
                 $order->discount = $request->discount;
-                $order->total_price = $this->calculateTotalPrice($request->product_id, $request->qty);
+                // $order->total_price = $this->calculateTotalPrice($request->product_id, $request->qty);
                 $order->type = 1;
                 $order->status = 1;
                 $order->note = $request->note;
                 $order->save();
 
                 $this->saveOrderItems($request, $order->id);
-                
+                // start new save sum    
+                $order_total_items = $order->orderItems->sum('total_cost');
+                $order->update(['total_price' => $order_total_items]);
+                // end new save sum 
                 // Set session variables for new order
                 session(['print_order_id' => $order->id, 'is_new_order' => true]);
             } else {
@@ -198,19 +202,27 @@ public function store(Request $request)
                 $order->user_id = auth()->user()->id;
                 $order->client_id = $request->client_id;
                 $order->service_id = $request->room_id;
-                $order->start_time = \Carbon\Carbon::now('Africa/Cairo');
+                // $order->start_time = \Carbon\Carbon::now('Africa/Cairo');
                 $order->discount = $request->discount;
-                if($request->has('product_id'))
-                    $order->total_price = $this->calculateTotalPrice($request->product_id, $request->qty);
+                // if($request->has('product_id'))
+                    // $order->total_price = $this->calculateTotalPrice($request->product_id, $request->qty);
                 $order->type = 2;
                 $order->status = 1;
                 $order->note = $request->note;
                 $order->save();
 
+                //save ordertimes
+                $order_time = OrderTime::create(['order_id' => $order->id, 'start_time' => \Carbon\Carbon::now('Africa/Cairo')]);
+                
                 if ($request->has('product_id')) {
                     $this->saveOrderItems($request, $order->id);
                 }
-
+                // start new save sum    
+                if($request->has('product_id')){
+                    $order_total_items = $order->orderItems->sum('total_cost');
+                    $order->update(['total_price' => $order_total_items]);
+                }
+                // end new save sum 
                 // Set session variables for new order
                 session(['print_order_id' => $order->id, 'is_new_order' => true]);
             } else {
@@ -362,20 +374,24 @@ public function closeTime($id)
     DB::beginTransaction();
 
     try {
-        $order_room = Order::findOrFail($id);
+        $order_room = OrderTime::where('order_id', $id)->first();
         $endTime = now()->tz('Africa/Cairo');
         $order_room->update(['end_time' => $endTime]);
 
         // Calculate the play time price
-        if ($order_room->start_time && $order_room->service->ps_price) {
+        if ($order_room->start_time && $order_room->order->service->ps_price) {
             $startTime = \Carbon\Carbon::parse($order_room->start_time);
             $durationInSeconds = $startTime->diffInSeconds($endTime);
-            $pricePerHour = $order_room->service->ps_price;
+            $pricePerHour = $order_room->order->service->ps_price;
             $totalPlayPrice = intval(($durationInSeconds / 3600) * $pricePerHour);
 
             // Add the play time price to the total price
             $order_room->total_price += $totalPlayPrice;
             $order_room->save();
+            
+               $order = Order::where('id', $order_room->order_id)->first();
+                $order->total_price += $totalPlayPrice;
+                $order->save();
         }
 
         DB::commit();

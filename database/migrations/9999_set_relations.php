@@ -31,6 +31,9 @@ return new class extends Migration
         Schema::table('expenses', function (Blueprint $table) {
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
         });
+        Schema::table('order_times', function (Blueprint $table) {
+             $table->foreign('order_id')->references('id')->on('orders')->onUpdate('cascade');
+        });
     }
 
     /**

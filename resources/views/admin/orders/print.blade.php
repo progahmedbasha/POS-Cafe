@@ -93,19 +93,20 @@
                     @endforeach
                 </table>
                 <hr>
-                @if ($order->end_time != null)
-                @php
+                @if ($order->orderTimes[0]->end_time != null)
+                {{-- @php
                 $startTime = \Carbon\Carbon::parse($order->start_time);
                 $endTime = \Carbon\Carbon::parse($order->end_time);
                 $durationInSeconds = $startTime->diffInSeconds($endTime);
                 $price = $order->service->ps_price;
                 $totalPrice = $durationInSeconds ? intval(($durationInSeconds / 3600) * $price) : 0;
-                @endphp
-                <span style="float:left;"> {{ $totalPrice }} ج</span><span style="float:right;">Room</span>
+                @endphp --}}
+                {{-- <span style="float:left;"> {{ $totalPrice }} ج</span><span style="float:right;">Room</span> --}}
+                <span style="float:left;"> {{ $order->orderTimes[0]->total_price }} ج</span><span style="float:right;">Room</span>
                 @endif
                 <br>
-                @if ($order->end_time != null)
-                <span style="float:left;">{{ $totalPrice + $order->orderItems->sum('total_cost') }} ج</span><span style="float:right;">اجمالي قبل
+                @if ($order->orderTimes[0]->end_time != null)
+                <span style="float:left;">{{$order->orderTimes[0]->total_price + $order->orderItems->sum('total_cost') }} ج</span><span style="float:right;">اجمالي قبل
                     الخصم</span>
                 @else
                 <span style="float:left;">{{ $order->total_price }} ج</span><span style="float:right;">اجمالي قبل

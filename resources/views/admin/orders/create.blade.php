@@ -185,9 +185,12 @@
         padding: 0.75rem 0.5rem;
         letter-spacing: -0.8px;
     }
+    .card-body {
+        padding: 1.5rem 0.5rem;
+    }
 </style>
 <div class="row">
-    <div class="col-xl-4 col-lg-4">
+    <div class="col-xl-4 col-lg-4" style="    padding-left: 1px;">
         <div class="card">
             <div class="card-header d-flex justify-content-between">
                 <div class="header-title">
@@ -208,8 +211,9 @@
                         <tbody>
                             @foreach($active_tables as $index=>$active_table)
                             <tr>
-                                <td>طاولة : ( {{ $active_table->service->name }} )</td>
-                                <td>{{ $active_table->orderItems->sum('total_cost') }}</td>
+                                <td>( {{ $active_table->service->name }} )</td>
+                                {{-- <td>{{ $active_table->orderItems->sum('total_cost') }}</td> --}}
+                                <td>{{ $active_table->total_price }}</td>
                                 <td>
                                     <!-- Button trigger modal -->
                                     <button type="button" class="btn btn-sm btn-icon btn-success" title="عرض الفاتورة"
@@ -239,12 +243,12 @@
                                     {{-- to print and close order --}}
                                     <a href="#" class="btn btn-sm btn-icon btn-danger"
                                         onclick='openmodle("{{route("print_table",["id" => $active_table->id] ) }}")'>
-                                     انهاء
+                                        انهاء
                                     </a>
                                     {{-- to print only--}}
                                     <a href="#" class="btn btn-sm btn-icon btn-primary"
                                         onclick='openmodle("{{route("print_table_reciept",["id" => $active_table->id] ) }}")'>
-                                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="1em"
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="1em"
                                             viewBox="0 0 512 512">
                                             <path
                                                 d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zM432 248a24 24 0 1 1 0 48 24 24 0 1 1 0-48z" />
@@ -289,7 +293,8 @@
                             @foreach($active_rooms as $index=>$active_room)
                             <tr>
                                 <td>( {{ $active_room->service->name }} )</td>
-                                <td>{{ date('h:i:s', strtotime($active_room->start_time)) }}</td>
+                                {{-- <td>{{ date('h:i:s', strtotime($active_room->start_time)) }}</td> --}}
+                                <td>{{ date('h:i', strtotime($active_room->orderTimes[0]->start_time)) }}</td>
                                 {{--
                               <td>{{ $active_room->start_time->format('h:i:s') }}</td>
                                 --}}
@@ -298,22 +303,23 @@
                                 </td>
                                 --}}
                                 <td>
-                                    @if ($active_room->end_time != null)
+                                    @if ($active_room->orderTimes[0]->end_time != null)
                                     {{
-                                 \Carbon\Carbon::parse($active_room->start_time)->diff(\Carbon\Carbon::parse($active_room->end_time))->format('%h:%i:%s')
+                                 \Carbon\Carbon::parse($active_room->orderTimes[0]->start_time)->diff(\Carbon\Carbon::parse($active_room->orderTimes[0]->end_time))->format('%h:%i:%s')
                                  }}
                                     @endif
                                 </td>
                                 <td>
-                                    @if ($active_room->end_time != null)
-                                    @php
-                                    $startTime = \Carbon\Carbon::parse($active_room->start_time);
-                                    $endTime = \Carbon\Carbon::parse($active_room->end_time);
+                                    @if ($active_room->orderTimes[0]->end_time != null)
+                                    {{-- @php
+                                    $startTime = \Carbon\Carbon::parse($active_room->orderTimes[0]->start_time);
+                                    $endTime = \Carbon\Carbon::parse($active_room->orderTimes[0]->end_time);
                                     $durationInSeconds = $startTime->diffInSeconds($endTime);
                                     $price = $active_room->service->ps_price;
                                     $totalPrice = $durationInSeconds ? intval(($durationInSeconds / 3600) * $price) : 0;
                                     @endphp
-                                    {{ $totalPrice }} ج
+                                    {{ $totalPrice }} ج --}}
+                                    {{ $active_room->orderTimes[0]->total_price }} ج
                                     @endif
                                 </td>
                                 <td class="text-center">
@@ -323,8 +329,11 @@
                                     --
                                     @endif
                                 </td>
-                                @if ($active_room->orderItems->count() > 0 && $active_room->end_time != null)
-                                <td>{{ $totalPrice + $active_room->orderItems->sum('total_cost')}} ج</td>
+                                {{-- total --}}
+                                @if ($active_room->orderItems->count() > 0 && $active_room->orderTimes[0]->end_time !=
+                                null)
+                                <td>{{ $active_room->orderTimes[0]->total_price + $active_room->orderItems->sum('total_cost')}}
+                                    ج</td>
                                 @else
                                 <td>--</td>
                                 @endif
@@ -350,7 +359,7 @@
                                             <circle opacity="0.89" cx="13.5" cy="10.5" r="1.5" fill="white"></circle>
                                         </svg>
                                     </button>
-                                    @if (empty($active_room->end_time))
+                                    @if (empty($active_room->orderTimes[0]->end_time))
                                     <a href="{{ route('close_time', $active_room->id) }}"
                                         class="btn btn-sm btn-icon btn-warning">
                                         انهاء الوقت
@@ -364,7 +373,7 @@
                                     <a href="#" class="btn btn-sm btn-icon btn-warning" style="font-size:xx-small;"
                                         onclick='openmodlePrintCaptinOrderNewItems("{{route("print_table_captin_order_new_items",["id" => $active_room->id] ) }}")'>جديد<br>طياعة
                                     </a>
-                                    @if ($active_room->end_time != null)
+                                    @if ($active_room->orderTimes[0]->end_time != null)
                                     <a href="#" class="btn btn-sm btn-icon btn-danger"
                                         onclick='openmodle("{{route("print_room",["id" => $active_room->id] ) }}")'>
                                         انهاء

@@ -544,7 +544,8 @@ public function closeTime($id)
     {
         $service = Service::find($request->table_id);
         if($service->type == 2){
-            $order->update(['service_id'=> $request->table_id, 'start_time' => \Carbon\Carbon::now('Africa/Cairo'),'type' => $service->type]);
+            $order->update(['service_id'=> $request->table_id,'type' => $service->type]);
+            $order->orderTimes()->create(['order_id' => $order->id, 'start_time' => \Carbon\Carbon::now('Africa/Cairo')]);
         } else {
             $order->update(['service_id'=> $request->table_id,'type' => $service->type]);
         }

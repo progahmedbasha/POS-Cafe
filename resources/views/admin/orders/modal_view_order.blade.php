@@ -60,6 +60,34 @@
                     @endforeach
                 </div>
                 {{-- <hr> --}}
+                <br>
+                @if ($active_table->orderItems->count() > 0)
+                اجمالي المشروبات :
+                {{ $active_table->orderItems->sum('total_cost') }} ج
+                @endif
+                <hr>
+                @if (!empty($active_table->orderTimes[0]->start_time))
+                <h6>بداية الوقت : {{ date('h:i:s', strtotime($active_table->orderTimes[0]->start_time)) }}</h6>
+                <h6>الوقت :
+                    @if ($active_table->orderTimes[0]->end_time != null)
+                    {{\Carbon\Carbon::parse($active_table->orderTimes[0]->start_time)->diff(\Carbon\Carbon::parse($active_table->orderTimes[0]->end_time))->format('%h:%i:%s')}}
+                    @endif
+                </h6>
+                <h6>سعر الوقت : @if ($active_table->orderTimes[0]->end_time != null)
+                    {{ $active_table->orderTimes[0]->total_price }}
+                    @endif
+                </h6>
+                <hr>
+                <h6>
+                    @if ($active_table->orderItems->count() > 0 && $active_table->orderTimes[0]->end_time != null)
+                    <h6>المبلغ الاجمالي :
+                        {{ $active_table->orderTimes[0]->total_price + $active_table->orderItems->sum('total_cost')}} ج
+                    </h6>
+                    @else
+                    <h6>--</h6>
+                    @endif
+                </h6>
+                @endif
 
             </div>
             <div class="modal-footer">

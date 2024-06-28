@@ -65,27 +65,28 @@
                 {{ $active_room->orderItems->sum('total_cost') }} ج
                 @endif
                 <hr>
-                <h6>بداية الوقت : {{ date('h:i:s', strtotime($active_room->start_time)) }}</h6>
+                <h6>بداية الوقت : {{ date('h:i:s', strtotime($active_room->orderTimes[0]->start_time)) }}</h6>
                 <h6>الوقت :
-                    @if ($active_room->end_time != null)
-                    {{\Carbon\Carbon::parse($active_room->start_time)->diff(\Carbon\Carbon::parse($active_room->end_time))->format('%h:%i:%s')}}
+                    @if ($active_room->orderTimes[0]->end_time != null)
+                    {{\Carbon\Carbon::parse($active_room->orderTimes[0]->start_time)->diff(\Carbon\Carbon::parse($active_room->orderTimes[0]->end_time))->format('%h:%i:%s')}}
                     @endif
                 </h6>
-                <h6>سعر الوقت : @if ($active_room->end_time != null)
-                    @php
+                <h6>سعر الوقت : @if ($active_room->orderTimes[0]->end_time != null)
+                    {{-- @php
                     $startTime = \Carbon\Carbon::parse($active_room->start_time);
                     $endTime = \Carbon\Carbon::parse($active_room->end_time);
                     $durationInSeconds = $startTime->diffInSeconds($endTime);
                     $price = $active_room->service->ps_price;
                     $totalPrice = $durationInSeconds ? intval(($durationInSeconds / 3600) * $price) : 0;
                     @endphp
-                    {{ $totalPrice }} ج
+                    {{ $totalPrice }} ج --}}
+                     {{ $active_room->orderTimes[0]->total_price }}
                     @endif
                 </h6>
                 <hr>
                 <h6> 
-                    @if ($active_room->orderItems->count() > 0 && $active_room->end_time != null)
-                    <h6>المبلغ الاجمالي : {{ $totalPrice + $active_room->orderItems->sum('total_cost')}} ج</h6>
+                    @if ($active_room->orderItems->count() > 0 && $active_room->orderTimes[0]->end_time != null)
+                    <h6>المبلغ الاجمالي : {{ $active_room->orderTimes[0]->total_price + $active_room->orderItems->sum('total_cost')}} ج</h6>
                     @else
                     <h6>--</h6>
                     @endif
@@ -101,10 +102,10 @@
                         <div class="col">
                             <select class="form-control" name="table_id">
                                 <option value="">الطاولات</option>
-                                @foreach ($rooms as $room)
-                                <option value="{{$room->id}}" {{($active_room->service_id==$room->id)?
+                                @foreach ($services as $service)
+                                <option value="{{$service->id}}" {{($active_room->service_id==$service->id)?
                                     'selected':''}}>
-                                    {{$room->name}}
+                                    {{$service->name}}
                                 </option>
                                 @endforeach
                             </select>

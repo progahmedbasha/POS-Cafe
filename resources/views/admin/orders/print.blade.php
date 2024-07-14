@@ -76,6 +76,8 @@
                 </table>
                 <br>
                 <hr>
+                @if ($order->orderItems->count() > 0)
+                    
                 <table>
                     <tr>
                         <th style="width:200px;">الصنف</th>
@@ -93,6 +95,11 @@
                     @endforeach
                 </table>
                 <hr>
+                <span style="float:left;"> {{ $order->orderItems->sum('total_cost') }} ج</span><span style="float:right;">اجمالي</span>
+                <br>
+                <hr>
+                @endif
+
                 @if (isset($order->orderTimes[0]) && $order->orderTimes[0]->end_time != null)
                 {{-- @php
                 $startTime = \Carbon\Carbon::parse($order->start_time);
@@ -103,8 +110,9 @@
                 @endphp --}}
                 {{-- <span style="float:left;"> {{ $totalPrice }} ج</span><span style="float:right;">Room</span> --}}
                 <span style="float:left;"> {{ $order->orderTimes[0]->total_price }} ج</span><span style="float:right;">Room</span>
-                @endif
                 <br>
+                <hr>
+                @endif
                 @if (isset($order->orderTimes[0]) && $order->orderTimes[0]->end_time != null)
                 <span style="float:left;">{{$order->orderTimes[0]->total_price + $order->orderItems->sum('total_cost') }} ج</span><span style="float:right;">اجمالي قبل
                     الخصم</span>
@@ -117,11 +125,11 @@
                     style="float:right;">اجمالي الخصم</span>
                 <br>
                 <hr>
-                @if ($order->end_time != null)
-                <span style="float:left;">{{ $totalPrice + $order->orderItems->sum('total_cost') - $order->discount }} ج</span><span
+                @if (isset($order->orderTimes[0]) && $order->orderTimes[0]->end_time != null)
+                <span style="float:left;">{{$order->orderTimes[0]->total_price + $order->orderItems->sum('total_cost') - $order->discount}} ج</span><span
                     style="float:right;">الاجمالي النهائي</span>
                 @else
-                <span style="float:left;">{{ $order->total_price - $order->discount }} ج</span><span
+                <span style="float:left;">{{ $order->orderItems->sum('total_cost') - $order->discount }} ج</span><span
                     style="float:right;">الاجمالي النهائي</span>
                 @endif
                 <br>

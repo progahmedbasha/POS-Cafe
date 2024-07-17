@@ -13,6 +13,7 @@ use App\Models\Product;
 use App\Models\Service;
 use DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -369,38 +370,39 @@ private function calculateTotalPrice($product_ids, $quantities)
         return redirect()->route('orders.index')->with('success', 'Deleted Successfully');
     }
 
-public function closeTime($id)
-{
-    DB::beginTransaction();
+    public function closeTime($id)
+    {
+        DB::beginTransaction();
 
-    try {
-        $order_room = OrderTime::where('order_id', $id)->first();
-        $endTime = now()->tz('Africa/Cairo');
-        $order_room->update(['end_time' => $endTime]);
+        try {
+            $order_room = OrderTime::where('order_id', $id)->first();
+            $endTime = now()->tz('Africa/Cairo');
+            $order_room->update(['end_time' => $endTime]);
 
-        // Calculate the play time price
-        if ($order_room->start_time && $order_room->order->service->ps_price) {
-            $startTime = \Carbon\Carbon::parse($order_room->start_time);
-            $durationInSeconds = $startTime->diffInSeconds($endTime);
-            $pricePerHour = $order_room->order->service->ps_price;
-            $totalPlayPrice = intval(($durationInSeconds / 3600) * $pricePerHour);
+            // Calculate the play time price
+            if ($order_room->start_time && $order_room->order->service->ps_price) {
+                $startTime = \Carbon\Carbon::parse($order_room->start_time);
+                $durationInSeconds = $startTime->diffInSeconds($endTime);
+                $pricePerHour = $order_room->order->service->ps_price;
+                $totalPlayPrice = intval(($durationInSeconds / 3600) * $pricePerHour);
 
-            // Add the play time price to the total price
-            $order_room->total_price += $totalPlayPrice;
-            $order_room->save();
-            
-               $order = Order::where('id', $order_room->order_id)->first();
-                $order->total_price += $totalPlayPrice;
-                $order->save();
+                // Add the play time price to the total price
+                $order_room->total_price += $totalPlayPrice;
+                $order_room->save();
+                
+                $order = Order::where('id', $order_room->order_id)->first();
+                    $order->total_price += $totalPlayPrice;
+                    $order->save();
+            }
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Time Stopped Successfully');
+        } catch (Exception $e) {
+            DB::rollBack();
+            Log::error('Error occurred while closing time for order ID ' . $id . ': ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
         }
-
-        DB::commit();
-        return redirect()->back()->with('success', 'Time Stopped Successfully');
-    } catch (Exception $e) {
-        DB::rollBack();
-        return redirect()->back()->with('error', 'Error occurred: ' . $e->getMessage());
     }
-}
     public function fetchBlock(Request $request)
     {
         $empty = Order::get();

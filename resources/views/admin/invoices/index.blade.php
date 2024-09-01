@@ -128,7 +128,7 @@
                                     <td>{{ $invoice->number }}</td>
                                     <td>{{ $invoice->user->name }}</td>
                                     <td>{{ $invoice->client->name }}</td>
-                                    <td>{{ $invoice->service->name }}</td>
+                                    <td>{{ $invoice->service?->name }}</td>
                                     <td>{{ $invoice->total_price }}</td>
                                     <td>{{ $invoice->updated_at }}</td>
                                     <td>

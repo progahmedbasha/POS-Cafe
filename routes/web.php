@@ -10,7 +10,7 @@ use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\TableController;
 use App\Http\Controllers\Admin\ExpensesController;
-use App\http\Controllers\HomeController;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------

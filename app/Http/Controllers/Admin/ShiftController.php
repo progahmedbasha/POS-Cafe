@@ -16,7 +16,8 @@ class ShiftController extends Controller
     public function index()
     {
         $shifts = Shift::whereStatus(2)->paginate();
-        return view('admin.shifts.index', compact('shifts'));
+        $isActiveShift = Shift::where('status', 1)->first();
+        return view('admin.shifts.index', compact('shifts', 'isActiveShift'));
     }
     /**
      * Show the form for creating a new resource.

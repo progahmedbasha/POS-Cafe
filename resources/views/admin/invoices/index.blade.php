@@ -3,7 +3,7 @@
 <!-- Nav Header Component Start -->
 <x-dashboard.base.nav>
     <x-slot:heading>
-        المدفوعات
+        المدفوعات     <h4 class="card-title"> الدرج ({{ $shift?->start_cash  - ($sum - $expenses) }}) </h4>
         </x-slot>
         {{-- We are on a mission to help developers like you build successful projects for FREE. --}}
 </x-dashboard.base.nav>
@@ -12,7 +12,6 @@
 </div>
 {{-- content --}}
 <div class="conatiner-fluid content-inner mt-n5 py-0">
-    <iframe id="iframe" src="" style="display:none;"></iframe>
     <div>
         <div class="row">
             <div class="col-md-12">

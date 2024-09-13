@@ -31,4 +31,8 @@ class Order extends Model
     {
         return $this->hasMany(OrderTime::class);
     }
+    public function shift()
+    {
+        return $this->belongsTo(Shift::class);
+    }
 }

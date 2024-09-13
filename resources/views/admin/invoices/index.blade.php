@@ -30,6 +30,12 @@
                         </div>
                         @endif
                         <div class="header-title">
+                            <h4 class="card-title"> استلام ({{ $shift?->start_cash }}) </h4>
+                        </div>
+                        <div class="header-title">
+                            <h4 class="card-title"> تسليم ({{ $shift?->end_cash }}) </h4>
+                        </div>
+                        <div class="header-title">
                             <h4 class="card-title"> عدد الفواتير ({{ $count }}) </h4>
                         </div>
                     </div>
@@ -61,39 +67,17 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                {{-- <div class="col">
-                                    <label class="form-label">المستوي :</label>
-                                    <select class="form-control" name="level_id">
-                                        <option value="">اختر المستوي </option>
-                                        @foreach ($levels as $level)
-                                        <option value="{{$level->id}}">
-                                {{$level->name}}
-                                </option>
-                                @endforeach
-                                </select>
-                            </div>
-                            <div class="col">
-                                <label class="form-label">المجموعه :</label>
-                                <select class="form-control" name="group_id">
-                                    <option value="">اختر المجموعة</option>
-                                    @foreach ($groups as $group)
-                                    <option value="{{$group->id}}">
-                                        {{$group->name}} | {{ $group->level->name }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col">
-                                <label class="form-label">المادة :</label>
-                                <select class="form-control" name="course_id">
-                                    <option value="">اختر المادة</option>
-                                    @foreach ($courses as $course)
-                                    <option value="{{$course->id}}">
-                                        {{$course->name}}
-                                    </option>
-                                    @endforeach
-                                </select>
-                            </div> --}}
+                                <div class="col">
+                                    <label class="form-label">الوردية</label>
+                                    <select class="form-control" name="shift_id">
+                                        <option value="">اختر الوردية </option>
+                                        @foreach ($shifts as $shift)
+                                        <option value="{{$shift->id}}">
+                                            {{$shift->getType()}} - {{ $shift->user->name }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             <div class="col-md-4" style=" margin-top: 30px !important;">
                                 <button type="submit" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg"
                                         width="16" height="16" fill="currentColor" class="bi bi-search"
@@ -114,6 +98,7 @@
                                     <th class="text-center">#</th>
                                     <th>رقم الفاتورة</th>
                                     <th>المستخدم</th>
+                                    <th>الورددية</th>
                                     <th>العميل</th>
                                     <th>نوع الخدمة</th>
                                     <th>اجمالي الفاتورة</th>
@@ -127,6 +112,7 @@
                                     <td class="text-center">{{ $index+1 }}</td>
                                     <td>{{ $invoice->number }}</td>
                                     <td>{{ $invoice->user->name }}</td>
+                                    <td>{{ $invoice->shift->getType() }}</td>
                                     <td>{{ $invoice->client->name }}</td>
                                     <td>{{ $invoice->service?->name }}</td>
                                     <td>{{ $invoice->total_price }}</td>

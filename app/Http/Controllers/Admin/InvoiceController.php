@@ -19,7 +19,7 @@ class InvoiceController extends Controller
     {
         $invoices = Order::with('user');
         $users = User::all();
-        $shifts = Shift::take(3)->get();
+        $shifts = Shift::take(3)->orderBy('id', 'desc')->get();
         $expenses = 0;
         if (isset($request->from) && isset($request->to)){
             $invoices = $invoices->whereBetween(DB::raw('DATE(updated_at)'), [$request->from, $request->to]);

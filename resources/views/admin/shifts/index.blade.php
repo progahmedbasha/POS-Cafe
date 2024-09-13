@@ -3,11 +3,11 @@
 <!-- Nav Header Component Start -->
 <x-dashboard.base.nav>
     <x-slot:heading>
-        المصروفـــات
+        الورديات
         </x-slot>
         {{-- We are on a mission to help developers like you build successful projects for FREE. --}}
         <x-slot:link>
-            {{ route('expenses.create') }}
+            {{ route('shifts.create') }}
             </x-slot>
 </x-dashboard.base.nav>
 <!-- Nav Header Component End -->
@@ -22,7 +22,7 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between">
                         <div class="header-title">
-                            <h4 class="card-title">المصروفـــات</h4>
+                            <h4 class="card-title">الورديات</h4>
                         </div>
                     </div>
                     <div class="card-body px-0">
@@ -31,25 +31,33 @@
                                 <thead>
                                     <tr class="ligth">
                                         <th class="text-center">#</th>
-                                        <th>الوردية</th>
-                                        <th>المبلغ</th>
-                                        <th>السبب</th>
+                                        <th>المستخدم</th>
+                                        <th>استلام</th>
+                                        <th>تسلم</th>
+                                        <th>بداية الوقت</th>
+                                        <th>نهاية الوقت</th>
+                                        <th>نوع الوردية</th>
+                                        <th>ملاحطات</th>
                                         <th style="min-width: 100px">الإعدادات</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($expenses as $index=>$expense)
+                                    @foreach($shifts as $index=>$shift)
                                     <tr>
                                         <td class="text-center">{{ $index+1 }}</td>
-                                        <td>{{ $expense->shift->getType() }} - {{ $expense->user->name }}</td>
-                                        <td>{{ $expense->price }}</td>
-                                        <td>{{ $expense->note ? $expense->note : '' }}</td>
+                                        <td>{{ $shift->user_id }}</td>
+                                        <td>{{ $shift->start_cash }}</td>
+                                        <td>{{ $shift->end_cash }}</td>
+                                        <td>{{ $shift->start_time }}</td>
+                                        <td>{{ $shift->end_time }}</td>
+                                        <td>{{ $shift->getType() }}</td>
+                                        <td>description</td>
                                         <td>
                                             <div class="flex align-items-center list-user-action"
                                                 style="display: flex;">
-                                                <x-dashboard.a-edit href="{{ route('expenses.edit', $expense->id) }}">
+                                                <x-dashboard.a-edit href="{{ route('products.edit', $shift->id) }}">
                                                 </x-dashboard.a-edit>&nbsp;
-                                                <form action="{{ route('expenses.destroy', $expense->id) }}"
+                                                <form action="{{ route('products.destroy', $shift->id) }}"
                                                     method="POST">
                                                     @csrf
                                                     @method('DELETE')
@@ -61,7 +69,7 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            {{ $expenses->links() }}
+                            {{ $shifts->links() }}
                         </div>
                     </div>
                 </div>
@@ -69,9 +77,4 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    function openmodle(url){
-    document.getElementById("iframe").src=url;
-  }
-</script>
 @endsection

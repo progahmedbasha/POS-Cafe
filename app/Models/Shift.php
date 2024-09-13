@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Expense extends Model
+class Shift extends Model
 {
     use HasFactory;
 
@@ -14,8 +14,14 @@ class Expense extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function shift()
+    public function getType()
     {
-        return $this->belongsTo(Shift::class);
+        if ($this->type == 1){
+            return 'صباحي';
+        } elseif ($this->type == 2) {
+            return 'مسائي';
+        } elseif ($this->type == 3) {
+            return 'الادارة';
+        }
     }
 }

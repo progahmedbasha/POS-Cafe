@@ -15,6 +15,7 @@ return new class extends Migration
             $table->increments('id');
             $table->unsignedInteger('number')->unsigned();
             $table->unsignedBigInteger('user_id')->unsigned();
+            $table->unsignedInteger('shift_id')->unsigned();
             $table->unsignedInteger('client_id')->unsigned()->nullable();
             $table->unsignedInteger('service_id')->unsigned();
             $table->unsignedSmallInteger('discount')->nullable();

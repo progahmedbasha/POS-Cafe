@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ShiftController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\InvoiceController;
@@ -53,6 +54,11 @@ Route::group(
             Route::resource('expenses', ExpensesController::class);
             Route::patch('change_table/{order}', [OrderController::class, 'changeTable'])->name('change_table');
             Route::patch('change_room/{order}', [OrderController::class, 'changeRoom'])->name('change_room');
+            Route::resource('shifts', ShiftController::class);
+            Route::get('active-shift', [ShiftController::class, 'getActiveShift'])->name('active-shift');
+            Route::post('close-shift', [ShiftController::class, 'closeShift'])->name('close-shift');
+            Route::post('edit_start_time/{id}', [OrderController::class, 'editStartTime'])->name('edit_start_time');
+            
     }
 );
     // Route::get('/', function(){

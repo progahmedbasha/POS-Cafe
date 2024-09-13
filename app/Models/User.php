@@ -42,4 +42,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function getUserShift()
+    {
+        return Shift::where('user_id', $this->id)->whereStatus(1)->first();
+    }
 }

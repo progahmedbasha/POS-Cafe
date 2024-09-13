@@ -65,7 +65,20 @@
                 {{ $active_room->orderItems->sum('total_cost') }} ج
                 @endif
                 <hr>
-                <h6>بداية الوقت : {{ date('h:i:s', strtotime($active_room->orderTimes[0]->start_time)) }}</h6>
+                <h6>
+                    {{-- {{ date('h:i:s', strtotime($active_room->orderTimes[0]->start_time)) }} --}}
+                    @if ($active_room->orderTimes[0]->end_time == null)
+                        <form action="{{ route('edit_start_time', $active_room->id) }}" method="POST">
+                            @csrf
+                            <label>بداية الوقت :</label>
+                            <input type="time"
+                                value="{{ Carbon\Carbon::parse($active_room->orderTimes[0]->start_time)->timezone('Africa/Cairo')->format('H:i') }}" 
+                                name="start_time">
+                                &nbsp;
+                            <button type="submit" class="btn btn-primary">تعديل الوقت</button>
+                        </form>
+                    @endif
+                </h6>
                 <h6>الوقت :
                     @if ($active_room->orderTimes[0]->end_time != null)
                     {{\Carbon\Carbon::parse($active_room->orderTimes[0]->start_time)->diff(\Carbon\Carbon::parse($active_room->orderTimes[0]->end_time))->format('%h:%i:%s')}}

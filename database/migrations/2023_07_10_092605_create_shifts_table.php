@@ -11,12 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('expenses', function (Blueprint $table) {
+        Schema::create('shifts', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedBigInteger('user_id')->unsigned();
-            $table->unsignedInteger('shift_id')->unsigned();
-            $table->unsignedSmallInteger('price')->default(0);
-            $table->string('note', 50)->nullable();
+            $table->unsignedInteger('start_cash');
+            $table->unsignedInteger('end_cash')->nullable();
+            $table->timestamp('start_time')->nullable();
+            $table->timestamp('end_time')->nullable();
+            $table->unsignedTinyInteger('type');
+            $table->unsignedTinyInteger('status')->default(1);
+            $table->string('description', 100)->nullable();
             $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });
@@ -27,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('expenses');
+        Schema::dropIfExists('shifts');
     }
 };

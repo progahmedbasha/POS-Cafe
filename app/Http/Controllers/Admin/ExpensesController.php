@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Expense;
 use App\Models\Service;
+use App\Models\Shift;
 use Illuminate\Http\Request;
 
 class ExpensesController extends Controller
@@ -31,8 +32,14 @@ class ExpensesController extends Controller
      */
     public function store(Request $request)
     {
+        $isActiveShift = Shift::where('status', 1)->first();
+        if($isActiveShift == null)
+        {
+            return redirect()->back()->with('error', 'برجاء فتح وردية جديده');
+        }
         Expense::create([
             'user_id' => auth()->user()->id,
+            'shift_id' => auth()->user()->getUserShift()->id,
             'price' => $request->price,
             'note' => $request->note
         ]);
@@ -58,7 +65,7 @@ class ExpensesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id )
+    public function update(Request $request, $id)
     {
         $expense = Expense::find($id);
         $expense->update($request->all());

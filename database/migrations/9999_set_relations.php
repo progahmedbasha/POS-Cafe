@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('client_id')->references('id')->on('clients')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign('service_id')->references('id')->on('services')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('shift_id')->references('id')->on('shifts')->onUpdate('cascade')->onDelete('cascade');
         });
         Schema::table('order_items', function (Blueprint $table) {
             $table->foreign('order_id')->references('id')->on('orders')->onUpdate('cascade');
@@ -30,9 +31,13 @@ return new class extends Migration
         });
         Schema::table('expenses', function (Blueprint $table) {
             $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign('shift_id')->references('id')->on('shifts')->onUpdate('cascade')->onDelete('cascade');
         });
         Schema::table('order_times', function (Blueprint $table) {
              $table->foreign('order_id')->references('id')->on('orders')->onUpdate('cascade');
+        });
+        Schema::table('shifts', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

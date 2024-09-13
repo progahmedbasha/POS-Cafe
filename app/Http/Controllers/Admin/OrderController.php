@@ -11,6 +11,8 @@ use App\Models\OrderSale;
 use App\Models\OrderTime;
 use App\Models\Product;
 use App\Models\Service;
+use App\Models\Shift;
+use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -159,6 +161,12 @@ public function create()
 public function store(Request $request)
 {
     // return $request;
+    $isActiveShift = Shift::where('status', 1)->first();
+    if($isActiveShift == null)
+    {
+        return redirect()->back()->with('error', 'برجاء فتح وردية جديده');
+    }
+
     DB::beginTransaction();
 
     try {
@@ -170,6 +178,7 @@ public function store(Request $request)
                 $order = new Order();
                 $order->number = $request->order_number;
                 $order->user_id = auth()->user()->id;
+                $order->shift_id = auth()->user()->getUserShift()->id;
                 $order->client_id = $request->client_id;
                 $order->service_id = $request->table_id;
                 $order->discount = $request->discount;
@@ -201,6 +210,7 @@ public function store(Request $request)
                 $order = new Order();
                 $order->number = $request->order_number;
                 $order->user_id = auth()->user()->id;
+                $order->shift_id = auth()->user()->getUserShift()->id;
                 $order->client_id = $request->client_id;
                 $order->service_id = $request->room_id;
                 // $order->start_time = \Carbon\Carbon::now('Africa/Cairo');
@@ -470,8 +480,8 @@ private function calculateTotalPrice($product_ids, $quantities)
     public function printRoom($id)
     {
         $order = Order::with('orderItems')->findOrFail($id);
-        $startTime = \Carbon\Carbon::parse($order->start_time);
-                $endTime = \Carbon\Carbon::parse($order->end_time);
+        $startTime = \Carbon\Carbon::parse($order->orderTimes[0]->start_time);
+        $endTime = \Carbon\Carbon::parse($order->orderTimes[0]->end_time);
                 $durationInSeconds = $startTime->diffInSeconds($endTime);
                 $price = $order->service->ps_price;
                 $totalPrice = $durationInSeconds ? intval(($durationInSeconds / 3600) * $price) : 0;
@@ -482,8 +492,8 @@ private function calculateTotalPrice($product_ids, $quantities)
     public function printRoomReciept($id)
     {
         $order = Order::with('orderItems')->findOrFail($id);
-        $startTime = \Carbon\Carbon::parse($order->start_time);
-        $endTime = \Carbon\Carbon::parse($order->end_time);
+        $startTime = \Carbon\Carbon::parse($order->orderTimes[0]->start_time);
+        $endTime = \Carbon\Carbon::parse($order->orderTimes[0]->end_time);
         $durationInSeconds = $startTime->diffInSeconds($endTime);
         $price = $order->service->ps_price;
         $totalPrice = $durationInSeconds ? intval(($durationInSeconds / 3600) * $price) : 0;
@@ -564,6 +574,17 @@ private function calculateTotalPrice($product_ids, $quantities)
         } else {
             $order->update(['service_id'=> $request->table_id,'type' => $service->type]);
         }
+        return redirect()->back()->with('success', 'Updated Successfully');
+    }
+    public function editStartTime($id, Request $request)
+    {
+        $order_time = OrderTime::where('order_id', $id)->first();
+        // Get the original start_time from the database
+        $existingStartTime = Carbon::parse($order_time->start_time);
+        // Extract the date part and apply the new time from the request
+        $newStartTime = $existingStartTime->setTimeFromTimeString($request->start_time);
+        // Update the record with the new time (keeping the original date)
+        $order_time->update(['start_time' => $newStartTime]);
         return redirect()->back()->with('success', 'Updated Successfully');
     }
 }

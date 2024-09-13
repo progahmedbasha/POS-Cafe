@@ -6,9 +6,11 @@
         الورديات
         </x-slot>
         {{-- We are on a mission to help developers like you build successful projects for FREE. --}}
+        @if (!$isActiveShift)
         <x-slot:link>
             {{ route('shifts.create') }}
             </x-slot>
+        @endif
 </x-dashboard.base.nav>
 <!-- Nav Header Component End -->
 <!--Nav End-->

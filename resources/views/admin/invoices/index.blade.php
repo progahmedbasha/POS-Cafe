@@ -3,7 +3,7 @@
 <!-- Nav Header Component Start -->
 <x-dashboard.base.nav>
     <x-slot:heading>
-        المدفوعات     <h4 class="card-title"> الدرج ({{ $shift?->start_cash  - ($sum - $expenses) }}) </h4>
+        المدفوعات     <h4 class="card-title"> الدرج ({{ ($sum + $shift?->start_cash) - $expenses }}) </h4>
         </x-slot>
         {{-- We are on a mission to help developers like you build successful projects for FREE. --}}
 </x-dashboard.base.nav>

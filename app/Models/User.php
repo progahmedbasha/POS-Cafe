@@ -44,6 +44,6 @@ class User extends Authenticatable
     ];
     public function getUserShift()
     {
-        return Shift::where('user_id', $this->id)->whereStatus(1)->first();
+        return Shift::whereStatus(1)->first();
     }
 }

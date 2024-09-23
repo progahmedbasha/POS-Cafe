@@ -397,7 +397,7 @@ private function calculateTotalPrice($product_ids, $quantities)
                 $totalPlayPrice = intval(($durationInSeconds / 3600) * $pricePerHour);
 
                 // Add the play time price to the total price
-                $order_room->total_price += $totalPlayPrice;
+                $order_room->total_price = $totalPlayPrice;
                 $order_room->save();
                 
                 $order = Order::where('id', $order_room->order_id)->first();

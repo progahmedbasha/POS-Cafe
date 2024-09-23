@@ -392,9 +392,13 @@ private function calculateTotalPrice($product_ids, $quantities)
             // Calculate the play time price
             if ($order_room->start_time && $order_room->order->service->ps_price) {
                 $startTime = \Carbon\Carbon::parse($order_room->start_time);
-                $durationInSeconds = $startTime->diffInSeconds($endTime);
+                 $durationInSeconds = $startTime->diffInSeconds($endTime);
+                 $durationInHours = $durationInSeconds / 3600;
                 $pricePerHour = $order_room->order->service->ps_price;
-                $totalPlayPrice = intval(($durationInSeconds / 3600) * $pricePerHour);
+            
+                // $totalPlayPrice = intval(($durationInSeconds / 3600) * $pricePerHour);
+
+                $totalPlayPrice = $durationInHours * $pricePerHour;
 
                 // Add the play time price to the total price
                 $order_room->total_price = $totalPlayPrice;

@@ -189,10 +189,10 @@ public function store(Request $request)
                 $order->save();
 
                 $this->saveOrderItems($request, $order->id);
-                // start new save sum    
+                // start new save sum
                 $order_total_items = $order->orderItems->sum('total_cost');
                 $order->update(['total_price' => $order_total_items]);
-                // end new save sum 
+                // end new save sum
                 // Set session variables for new order
                 session(['print_order_id' => $order->id, 'is_new_order' => true]);
             } else {
@@ -224,16 +224,16 @@ public function store(Request $request)
 
                 //save ordertimes
                 $order_time = OrderTime::create(['order_id' => $order->id, 'start_time' => \Carbon\Carbon::now('Africa/Cairo')]);
-                
+
                 if ($request->has('product_id')) {
                     $this->saveOrderItems($request, $order->id);
                 }
-                // start new save sum    
+                // start new save sum
                 if($request->has('product_id')){
                     $order_total_items = $order->orderItems->sum('total_cost');
                     $order->update(['total_price' => $order_total_items]);
                 }
-                // end new save sum 
+                // end new save sum
                 // Set session variables for new order
                 session(['print_order_id' => $order->id, 'is_new_order' => true]);
             } else {
@@ -395,7 +395,7 @@ private function calculateTotalPrice($product_ids, $quantities)
                  $durationInSeconds = $startTime->diffInSeconds($endTime);
                  $durationInHours = $durationInSeconds / 3600;
                 $pricePerHour = $order_room->order->service->ps_price;
-            
+
                 // $totalPlayPrice = intval(($durationInSeconds / 3600) * $pricePerHour);
 
                 $totalPlayPrice = $durationInHours * $pricePerHour;
@@ -403,7 +403,7 @@ private function calculateTotalPrice($product_ids, $quantities)
                 // Add the play time price to the total price
                 $order_room->total_price = $totalPlayPrice;
                 $order_room->save();
-                
+
                 $order = Order::where('id', $order_room->order_id)->first();
                     $order->total_price += $totalPlayPrice;
                     $order->save();
@@ -528,13 +528,14 @@ private function calculateTotalPrice($product_ids, $quantities)
     {
         $orderItem = OrderItem::find($request->item_id);
         $origin_order = $orderItem->order;
-        
+
         // Recalculate total price after removing the item
-        $orderItem->delete();
-        
+        // $orderItem->delete();
+        OrderItem::where('id', $request->item_id)->delete();
+
         $totalPrice = $origin_order->orderItems->sum('total_cost');
         $origin_order->update(['total_price' => $totalPrice]);
-        
+
         // Check if the associated Order doesn't have any more OrderItems
         if ($origin_order->orderItems->isEmpty() && $origin_order->type == 1) {
             // Delete the Order

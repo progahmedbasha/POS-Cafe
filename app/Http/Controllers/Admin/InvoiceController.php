@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\Expense;
+use DB;
+use App\Models\User;
 use App\Models\Order;
 use App\Models\Shift;
-use App\Models\User;
-use DB;
+use App\Models\Expense;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class InvoiceController extends Controller
 {
@@ -32,12 +32,14 @@ class InvoiceController extends Controller
         $expenses = Expense::where('shift_id', $request->shift_id)->whereBetween(DB::raw('DATE(updated_at)'), [$request->from, $request->to])->sum('price');
         }
         // $invoices = $invoices->paginate(config('admin.pagination'));
-        $invoices = $invoices->where('status', 2)->get();
+        $invoices = $invoices->where('status', 2)->paginate();
         $sum = $invoices->sum('total_price');
          $count = $invoices->count();
         $shift = Shift::find($request->shift_id);
         return view('admin.invoices.index', compact('invoices', 'sum', 'users', 'count', 'expenses', 'shifts', 'shift'));
     }
+
+
 // public function index(Request $request)
 // {
 //     // احصل على جميع المستخدمين
@@ -106,7 +108,7 @@ class InvoiceController extends Controller
      */
     public function update(Request $request)
     {
-       
+
     }
 
     /**

@@ -69,11 +69,15 @@
                                 <div class="col">
                                     <label class="form-label">الوردية</label>
                                     <select class="form-control" name="shift_id">
-                                        <option value="">اختر الوردية </option>
+                                        <option value=""> الورديات </option>
                                         @foreach ($shifts as $shift)
-                                        <option value="{{$shift->id}}">
-                                            {{$shift->getType()}} - {{ $shift->user->name }}
+                                        <option value="{{ $shift->id }}"
+                                            {{ $shift->status == 1 ? 'selected' : '' }}
+                                            {{ $shift->status == 1 ? 'style=background-color:green' : '' }}>
+                                             {{ $shift->status == 1 ? ' (الحالية)' : '' }} -  {{ $shift->getType() }} - {{ $shift->user->name }}
                                         </option>
+
+
                                         @endforeach
                                     </select>
                                 </div>
@@ -133,7 +137,7 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        {{-- {{ $invoices->links() }} --}}
+                        {{ $invoices->withQueryString()->links() }}
                     </div>
                 </div>
             </div>

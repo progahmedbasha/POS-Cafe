@@ -78,7 +78,6 @@ class InvoiceController extends Controller
             $invoices = $invoices->paginate(config('admin.pagination'));
         }
 
-
         $shift = Shift::find($request->shift_id);
 
         return view('admin.invoices.index', compact('invoices', 'sum', 'users', 'count', 'expenses', 'shifts', 'shift'));

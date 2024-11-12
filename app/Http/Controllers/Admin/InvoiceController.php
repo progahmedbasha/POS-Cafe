@@ -72,6 +72,7 @@ class InvoiceController extends Controller
         // Paginate after getting the total sum and count
         $invoices = $invoices->paginate(config('admin.pagination'));
 
+
         $shift = Shift::find($request->shift_id);
 
         return view('admin.invoices.index', compact('invoices', 'sum', 'users', 'count', 'expenses', 'shifts', 'shift'));

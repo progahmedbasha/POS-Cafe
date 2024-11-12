@@ -15,29 +15,69 @@ class InvoiceController extends Controller
     /**
      * Display a listing of the resource.
      */
+    // public function index(Request $request)
+    // {
+    //     $invoices = Order::with('user');
+    //     $users = User::all();
+    //     $shifts = Shift::take(3)->orderBy('id', 'desc')->get();
+    //     $expenses = 0;
+    //     if (isset($request->from) && isset($request->to)){
+    //         $invoices = $invoices->whereBetween(DB::raw('DATE(updated_at)'), [$request->from, $request->to]);
+    //         $expenses = Expense::whereBetween(DB::raw('DATE(updated_at)'), [$request->from, $request->to])->sum('price');
+    //     }
+    //     if (isset($request->user_id))
+    //         $invoices->where('user_id', $request->user_id);
+    //     if (isset($request->shift_id)){
+    //     $invoices->where('shift_id', $request->shift_id);
+    //     $expenses = Expense::where('shift_id', $request->shift_id)->whereBetween(DB::raw('DATE(updated_at)'), [$request->from, $request->to])->sum('price');
+    //     }
+    //     // $invoices = $invoices->paginate(config('admin.pagination'));
+    //     $invoices = $invoices->where('status', 2)->paginate();
+    //     $sum = $invoices->sum('total_price');
+    //     $count = $invoices->count();
+    //     $shift = Shift::find($request->shift_id);
+    //     return view('admin.invoices.index', compact('invoices', 'sum', 'users', 'count', 'expenses', 'shifts', 'shift'));
+    // }
     public function index(Request $request)
     {
         $invoices = Order::with('user');
         $users = User::all();
         $shifts = Shift::take(3)->orderBy('id', 'desc')->get();
         $expenses = 0;
+
+        // Apply filters based on request parameters
         if (isset($request->from) && isset($request->to)){
             $invoices = $invoices->whereBetween(DB::raw('DATE(updated_at)'), [$request->from, $request->to]);
             $expenses = Expense::whereBetween(DB::raw('DATE(updated_at)'), [$request->from, $request->to])->sum('price');
         }
-        if (isset($request->user_id))
+
+        if (isset($request->user_id)) {
             $invoices->where('user_id', $request->user_id);
-        if (isset($request->shift_id)){
-        $invoices->where('shift_id', $request->shift_id);
-        $expenses = Expense::where('shift_id', $request->shift_id)->whereBetween(DB::raw('DATE(updated_at)'), [$request->from, $request->to])->sum('price');
         }
-        // $invoices = $invoices->paginate(config('admin.pagination'));
-        $invoices = $invoices->where('status', 2)->paginate();
+
+        if (isset($request->shift_id)) {
+            $invoices->where('shift_id', $request->shift_id);
+            $expenses = Expense::where('shift_id', $request->shift_id)
+                ->whereBetween(DB::raw('DATE(updated_at)'), [$request->from, $request->to])
+                ->sum('price');
+        }
+
+        // Filter by status
+        $invoices->where('status', 2);
+
+        // Get total sum and count before pagination
         $sum = $invoices->sum('total_price');
         $count = $invoices->count();
+
+        // Paginate after getting the total sum and count
+        $invoices = $invoices->paginate(config('admin.pagination'));
+
         $shift = Shift::find($request->shift_id);
+
         return view('admin.invoices.index', compact('invoices', 'sum', 'users', 'count', 'expenses', 'shifts', 'shift'));
     }
+
+
 
 
 // public function index(Request $request)

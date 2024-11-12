@@ -70,7 +70,13 @@ class InvoiceController extends Controller
         $count = $invoices->count();
 
         // Paginate after getting the total sum and count
-        $invoices = $invoices->paginate(config('admin.pagination'));
+        // $invoices = $invoices->paginate(config('admin.pagination'));
+        if ($request->shift_id || $request->user_id || $request->from || $request->to){
+            $invoices = $invoices->get();
+        } else
+        {
+            $invoices = $invoices->paginate(config('admin.pagination'));
+        }
 
 
         $shift = Shift::find($request->shift_id);

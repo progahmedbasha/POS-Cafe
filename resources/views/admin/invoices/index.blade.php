@@ -137,7 +137,10 @@
                                 @endforeach
                             </tbody>
                         </table>
-                        {{ $invoices->withQueryString()->links() }}
+
+                        @if ($invoices instanceof \Illuminate\Pagination\LengthAwarePaginator && $invoices->hasPages())
+                            {{ $invoices->withQueryString()->links() }}
+                        @endif
                     </div>
                 </div>
             </div>

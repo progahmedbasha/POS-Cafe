@@ -32,10 +32,10 @@ class InvoiceController extends Controller
         $expenses = Expense::where('shift_id', $request->shift_id)->whereBetween(DB::raw('DATE(updated_at)'), [$request->from, $request->to])->sum('price');
         }
         // $invoices = $invoices->paginate(config('admin.pagination'));
-        $invoices = $invoices->where('status', 2)->paginate();
         $sum = $invoices->sum('total_price');
-         $count = $invoices->count();
+        $count = $invoices->count();
         $shift = Shift::find($request->shift_id);
+        $invoices = $invoices->where('status', 2)->paginate();
         return view('admin.invoices.index', compact('invoices', 'sum', 'users', 'count', 'expenses', 'shifts', 'shift'));
     }
 

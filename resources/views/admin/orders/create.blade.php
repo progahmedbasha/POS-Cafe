@@ -292,7 +292,7 @@
                         <tbody>
                             @foreach($active_rooms as $index=>$active_room)
                             <tr>
-                                <td>( {{ $active_room->service->name }} )</td>
+                                <td>( {{ $active_room->service?->name }} )</td>
                                 {{-- <td>{{ date('h:i:s', strtotime($active_room->start_time)) }}</td> --}}
                                 <td>{{ date('h:i', strtotime($active_room->orderTimes[0]->start_time)) }}</td>
                                 {{--

@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
+use App\Models\Shift;
+use Carbon\Carbon;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreProductRequest;
 use App\Models\Category;
+use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -120,4 +122,126 @@ class ProductController extends Controller
         $products = Product::where('category_id', 1)->get();
         return view('website.soda-menu', compact('products'));
     }
+//     public function productReports(Request $request)
+//     {
+//         $shifts = Shift::take(3)->orderBy('id', 'desc')->get();
+//         $query = Product::query();
+
+//         // Initialize sums
+//         $totalQty = 0;
+//         $totalCost = 0;
+
+//         // Handle date filters
+//         if (isset($request->from) && isset($request->to)) {
+//             if ($request->has('from') && $request->has('to')) {
+//                 $from = Carbon::parse($request->input('from'))->startOfDay();
+//                 $to = Carbon::parse($request->input('to'))->endOfDay();
+
+//                 $query->whereHas('orderItems', function ($q) use ($from, $to) {
+//                     $q->whereBetween('created_at', [$from, $to]);
+//                 });
+
+//                 // Sum `qty` and `total_cost` for the given date range
+//                 $totalQty = \App\Models\OrderItem::whereBetween('created_at', [$from, $to])->sum('qty');
+//                 $totalCost = \App\Models\OrderItem::whereBetween('created_at', [$from, $to])->sum('total_cost');
+//             }
+//         }
+
+//         // Handle product search
+//         if ($request->filled('search')) {
+//             $query->where('name', 'like', '%' . $request->input('search') . '%');
+//         }
+//         // Filter by `shift_id`
+//         if (isset($request->shift_id)) {
+//             if ($request->has('shift_id')) {
+//                 $shiftId = $request->input('shift_id');
+
+//                 $query->whereHas('orderItems.order', function ($q) use ($shiftId) {
+//                     $q->where('shift_id', $shiftId);
+//                 });
+
+//                 // Update totals based on shift filtering
+//                 $totalQty_shift = \App\Models\OrderItem::whereHas('order', function ($q) use ($shiftId) {
+//                     $q->where('shift_id', $shiftId);
+//                 })->sum('qty');
+
+//                 $totalCost_shift = \App\Models\OrderItem::whereHas('order', function ($q) use ($shiftId) {
+//                     $q->where('shift_id', $shiftId);
+//                 })->sum('total_cost');
+//             }
+//         }
+//         // Paginate the results
+//         $products = $query->paginate(config('admin.pagination'));
+//         $shifts = Shift::take(3)->orderBy('id', 'desc')->get(); // Fetch all shifts for the dropdown
+// dd($totalQty_shift);
+//         return view('admin.products.reports', compact('products', 'totalQty', 'totalCost', 'shifts', 'totalQty_shift', 'totalCost_shift'));
+//     }
+    public function productReports(Request $request)
+{
+    $query = Product::query();
+    $shifts = Shift::take(3)->orderBy('id', 'desc')->get(); // Fetch shifts for dropdown
+
+    // Handle date filters
+    $from = $to = null; // Initialize date range
+    if ($request->has('from') && $request->has('to') && !empty($request->from) && !empty($request->to)) {
+        $from = Carbon::parse($request->input('from'))->startOfDay();
+        $to = Carbon::parse($request->input('to'))->endOfDay();
+
+        $query->whereHas('orderItems', function ($q) use ($from, $to) {
+            $q->whereBetween('created_at', [$from, $to]);
+        });
+    }
+
+    // Handle product search
+    if ($request->filled('search')) {
+        $query->where('name', 'like', '%' . $request->input('search') . '%');
+    }
+
+    // Filter products by shift
+    if ($request->has('shift_id') && !empty($request->shift_id)) {
+        $shiftId = $request->input('shift_id');
+
+        $query->whereHas('orderItems.order', function ($q) use ($shiftId) {
+            $q->where('shift_id', $shiftId);
+        });
+    }
+
+    // Fetch products with pagination
+    $products = $query->with(['orderItems.order'])->paginate(config('admin.pagination'));
+
+    // Calculate totals for each product
+    foreach ($products as $product) {
+        $product->totalQty_shift = 0;
+        $product->totalCost_shift = 0;
+
+        // Sum `qty` and `total_cost` for each product based on the shift and date range
+        $product->totalQty_shift = \App\Models\OrderItem::where('product_id', $product->id)
+            ->whereHas('order', function ($q) use ($request) {
+                if ($request->has('shift_id') && !empty($request->shift_id)) {
+                    $q->where('shift_id', $request->shift_id);
+                }
+            })
+            ->when($from && $to, function ($q) use ($from, $to) {
+                $q->whereBetween('created_at', [$from, $to]);
+            })
+            ->sum('qty');
+
+        $product->totalCost_shift = \App\Models\OrderItem::where('product_id', $product->id)
+            ->whereHas('order', function ($q) use ($request) {
+                if ($request->has('shift_id') && !empty($request->shift_id)) {
+                    $q->where('shift_id', $request->shift_id);
+                }
+            })
+            ->when($from && $to, function ($q) use ($from, $to) {
+                $q->whereBetween('created_at', [$from, $to]);
+            })
+            ->sum('total_cost');
+    }
+
+    // Return data to the view
+    return view('admin.products.reports', compact('products', 'shifts'));
+}
+
+
+
 }

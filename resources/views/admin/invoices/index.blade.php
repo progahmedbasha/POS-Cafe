@@ -76,8 +76,6 @@
                                             {{ $shift->status == 1 ? 'style=background-color:green' : '' }}>
                                              {{ $shift->status == 1 ? ' (الحالية)' : '' }} -  {{ $shift->getType() }} - {{ $shift->user->name }}
                                         </option>
-
-
                                         @endforeach
                                     </select>
                                 </div>

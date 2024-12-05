@@ -123,7 +123,7 @@ class ProductController extends Controller
         $products = Product::where('category_id', 1)->get();
         return view('website.soda-menu', compact('products'));
     }
-     public function productReports(Request $request)
+    public function productReports(Request $request)
     {
         $query = Product::query();
         $shifts = Shift::take(3)->orderBy('id', 'desc')->get(); // Fetch shifts for dropdown
@@ -154,7 +154,7 @@ class ProductController extends Controller
         }
 
         // Fetch products with pagination
-        $products = $query->with(['orderItems.order'])->paginate(config('admin.pagination'));
+        $products = $query->with(['orderItems.order'])->get();
 
         // Calculate totals for each product
         foreach ($products as $product) {

@@ -51,7 +51,7 @@
                                         <option value=""> الورديات </option>
                                         @foreach ($shifts as $shift)
                                         <option value="{{ $shift->id }}"
-                                            {{-- {{ $shift->status == 1 ? 'selected' : '' }} --}}
+                                            {{ request('shift_id') == $shift->id ? 'selected' : '' }}
                                             {{ $shift->status == 1 ? 'style=background-color:green' : '' }}>
                                              {{ $shift->status == 1 ? ' (الحالية)' : '' }} -  {{ $shift->getType() }} - {{ $shift->user->name }}
                                         </option>
@@ -94,7 +94,7 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            {{ $products->links() }}
+                            {{ $invoices->withQueryString()->links() }}
                         </div>
                     </div>
                 </div>

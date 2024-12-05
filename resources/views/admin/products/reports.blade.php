@@ -84,27 +84,43 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($products as $index=>$product)
+                                    @foreach($products as $index => $product)
                                     <tr>
-                                        <td class="text-center">{{ $index+1 }}</td>
+                                        <td class="text-center">{{ $index + 1 }}</td>
                                         <td>{{ $product->name }}</td>
-                                       <td>{{ $product->totalQty_shift }}</td>
+                                        <td>{{ $product->totalQty_shift }}</td>
                                         <td>{{ $product->totalCost_shift }}</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
                             </table>
-                            {{ $products->withQueryString()->links() }}
+                            {{-- {{ $products->withQueryString()->links() }} --}}
                         </div>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    function openmodle(url){
-    document.getElementById("iframe").src=url;
-  }
+<!-- Initialize DataTable -->
+<script>
+    $(document).ready(function() {
+        $('#user-list-table').DataTable({
+            "paging": true, // Enable pagination
+            "searching": false, // Enable search
+            "lengthChange": false, // Disable page length change (optional)
+            "info": true, // Enable info display
+            "language": {
+                "paginate": {
+                    "previous": "السابق",
+                    "next": "التالي"
+                },
+                "search": "بحث:",
+                "lengthMenu": "عرض _MENU_ سجلات",
+                "info": "إظهار _START_ إلى _END_ من إجمالي _TOTAL_"
+            }
+        });
+    });
 </script>
 @endsection

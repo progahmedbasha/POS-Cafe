@@ -94,7 +94,7 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            {{ $invoices->withQueryString()->links() }}
+                            {{ $products->withQueryString()->links() }}
                         </div>
                     </div>
                 </div>

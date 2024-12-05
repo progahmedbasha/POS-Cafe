@@ -27,4 +27,12 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class);
     }
+    public function countOrders()
+    {
+        return $this->orderItems()->sum('qty');
+    }
+    public function totalSales()
+    {
+        return $this->orderItems()->sum('total_cost');
+    }
 }

@@ -193,14 +193,18 @@ public function store(Request $request)
                 $order_total_items = $order->orderItems->sum('total_cost');
                 $order->update(['total_price' => $order_total_items]);
                 // end new save sum
-                // Set session variables for new order
-                session(['print_order_id' => $order->id, 'is_new_order' => true]);
+                    if (!$request->has('add_water')) {
+                        // Set session variables for new order
+                        session(['print_order_id' => $order->id, 'is_new_order' => true]);
+                    }
             } else {
                 $order_exite->update(['note' => $request->note]);
                 $this->updateOrderItems($request, $order_exite);
 
-                // Set session variables for existing order with new items
-                session(['print_order_id' => $order_exite->id, 'is_new_order' => false]);
+                    if (!$request->has('add_water')) {
+                        // Set session variables for existing order with new items
+                        session(['print_order_id' => $order_exite->id, 'is_new_order' => false]);
+                    }
             }
         } elseif ($request->room_id !== null) {
             $order_exite = Order::where('service_id', $request->room_id)->where('status', 1)->first();

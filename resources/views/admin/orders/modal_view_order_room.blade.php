@@ -104,6 +104,34 @@
                     <h6>--</h6>
                     @endif
                 </h6>
+                <hr>
+                <div style="background-color: blanchedalmond;">
+                    <form action="{{route('orders.store')}}" method="post" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" value="add_water" name="add_water">
+                        <input type="hidden" value="{{ $active_room->order_number }}" name="order_number">
+                        <input type="hidden" value="{{ $active_room->id }}" name="table_id">
+                        <input type="hidden" value="{{ $active_room->client_id }}" name="client_id">
+                        <input type="hidden" value="{{ $active_room->service_id }}" name="table_id">
+                        <input type="hidden" name="total_price" value="8">
+                        <div class="row" style="margin-right: 1px;">
+                            <div class="col">
+                                <label class="form-label">اضافة مياه</label>
+                                <select class="form-control" name="product_id[]">
+                                    <option value="186" selected>مياه</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label class="form-label">الكمية</label>
+                                <input type="number" class="form-control" value="1" name="qty[]" min="1">
+                            </div>
+                            <div class="col" style="margin-top: 32px;">
+                                <button type="submit" class="btn btn-primary form-control" style="width: auto;">اضافة</button>
+                            </div>
+                        </div>
+                        <br>
+                    </form>
+                </div>
 
             </div>
             <div class="modal-footer">

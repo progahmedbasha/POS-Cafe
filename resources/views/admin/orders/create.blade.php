@@ -210,7 +210,7 @@
                         </thead>
                         <tbody>
                             @foreach($active_tables as $index=>$active_table)
-                            <tr>
+                            <tr @if($active_table->is_printed) style="background-color: bisque;" @endif>
                                 <td>( {{ $active_table->service->name }} )</td>
                                 {{-- <td>{{ $active_table->orderItems->sum('total_cost') }}</td> --}}
                                 <td>{{ $active_table->total_price }}</td>
@@ -291,7 +291,8 @@
                         </thead>
                         <tbody>
                             @foreach($active_rooms as $index=>$active_room)
-                            <tr>
+                            <tr @if($active_room->is_printed) style="background-color: bisque;" @endif>
+
                                 <td>( {{ $active_room->service?->name }} )</td>
                                 {{-- <td>{{ date('h:i:s', strtotime($active_room->start_time)) }}</td> --}}
                                 <td>{{ date('h:i', strtotime($active_room->orderTimes[0]->start_time)) }}</td>

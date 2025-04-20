@@ -472,6 +472,7 @@ private function calculateTotalPrice($product_ids, $quantities)
     public function printTableReceipt($id)
     {
         $order = Order::with('orderItems')->findOrFail($id);
+        $order->update(['is_printed' => 1]);
         return view('admin.orders.print', compact('order'));
     }
     public function printTableCaptinOrder($id)
@@ -504,6 +505,7 @@ private function calculateTotalPrice($product_ids, $quantities)
     public function printRoomReciept($id)
     {
         $order = Order::with('orderItems')->findOrFail($id);
+        $order->update(['is_printed' => 1]);
         $startTime = \Carbon\Carbon::parse($order->orderTimes[0]->start_time);
         $endTime = \Carbon\Carbon::parse($order->orderTimes[0]->end_time);
         $durationInSeconds = $startTime->diffInSeconds($endTime);

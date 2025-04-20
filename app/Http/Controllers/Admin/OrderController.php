@@ -56,8 +56,13 @@ public function create()
     $tabels = Service::whereType(1)->get();
     $rooms = Service::whereType(2)->get();
     $services = Service::all();
-    $active_tables = Order::whereType(1)->whereStatus(1)->get();
-    $active_rooms = Order::whereType(2)->whereStatus(1)->get();
+    // $active_tables = Order::whereType(1)->whereStatus(1)->get();
+    $active_tables = Order::with('service')->whereType(1)->whereStatus(1)->get()->sortBy(function ($order) {
+        return $order->service->name ?? '';
+    });
+    $active_rooms = Order::whereType(2)->whereStatus(1)->get()->sortBy(function ($order) {
+        return $order->service->name ?? '';
+    });
     $empty = Order::get();
 
     if ($empty->count() < 1) {

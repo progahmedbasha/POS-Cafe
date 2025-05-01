@@ -16,6 +16,8 @@ use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+// use Spatie\Activitylog\Models\Activity;
+use App\Models\Activity;
 
 class OrderController extends Controller
 {
@@ -68,7 +70,7 @@ public function create()
     if ($empty->count() < 1) {
         $order_number = 1;
     } else {
-        $order_number = Order::get()->last()->number + 1;
+        $order_number = Order::withTrashed()->get()->last()->number + 1;
     }
 
     // Check if there's an order to print
@@ -606,5 +608,38 @@ private function calculateTotalPrice($product_ids, $quantities)
         // Update the record with the new time (keeping the original date)
         $order_time->update(['start_time' => $newStartTime]);
         return redirect()->back()->with('success', 'Updated Successfully');
+    }
+
+    public function ordersLogs(Request $request)
+{
+    $orders = Order::withTrashed();
+
+    if ($request->filled('shift_id')) {
+        $orders->where('shift_id', $request->shift_id);
+    }
+
+    if ($request->filled('number')) {
+        $orders->where('number', $request->number);
+    }
+    // Check if we need to include trashed orders
+    if ($request->has('trashed') && $request->trashed == '1') {
+        $orders->onlyTrashed();  // Filter to show only trashed orders
+    }
+
+    // Assign paginated result
+    $orders = $orders->paginate(config('admin.pagination'));
+
+    $shifts = Shift::where('status', 1)->orderBy('id', 'desc')->get();
+
+    return view('admin.orders.logs.index', compact('orders', 'shifts'));
+}
+
+    public function orderLogShow($id)
+    {
+        
+        $logs = Activity::where('subject_type', Order::class)
+               ->where('subject_id', $id)
+               ->get();
+        return view('admin.orders.logs.show', compact('logs'));
     }
 }

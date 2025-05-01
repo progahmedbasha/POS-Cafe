@@ -59,6 +59,9 @@ Route::group(
             Route::post('close-shift', [ShiftController::class, 'closeShift'])->name('close-shift');
             Route::post('edit_start_time/{id}', [OrderController::class, 'editStartTime'])->name('edit_start_time');
             Route::get('product-reports', [ProductController::class, 'productReports'])->name('product-reports');
+            Route::get('orders_logs', [OrderController::class, 'ordersLogs'])->name('orders_logs');
+            Route::get('order_log_show/{id}', [OrderController::class, 'orderLogShow'])->name('order_log_show');
+            
     }
 );
     // Route::get('/', function(){

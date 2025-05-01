@@ -303,7 +303,7 @@
                         <span class="item-name">تقارير المنتجات</span>
                     </a>
                 </li>
-                @if(auth()->user()->type_id == 1)
+                @if(auth()->user()->id == 1)
                     <li class="nav-item">
                         <a class="nav-link @if(Route::is('orders_logs') ) active @endif"
                             href="{{ route('orders_logs') }}">

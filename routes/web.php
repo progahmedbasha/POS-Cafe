@@ -67,7 +67,7 @@ Route::group(
     // Route::get('/', function(){
     //     return view('website.index');
     // })->name('website');
-    Route::get('/' , [HomeController::class, 'website'])->name('website');
+    Route::get('landing' , [HomeController::class, 'website'])->name('website');
     Route::get('menu' , [ProductController::class, 'menu'])->name('menu');
     Route::get('soda-menu', [ProductController::class, 'SodaMenuIndex'])->name('soda-menu');
 

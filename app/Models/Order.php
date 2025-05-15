@@ -47,4 +47,8 @@ class Order extends Model
             ->useLogName('orders')
             ->setDescriptionForEvent(fn(string $eventName) => "تم {$eventName} الطلب");
     }
+    public function isHasWater()
+    {
+        return $this->orderItems()->where('product_id', 186)->exists();
+    }
 }

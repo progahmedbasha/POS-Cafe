@@ -213,7 +213,12 @@
                             <tr @if($active_table->is_printed) style="background-color: bisque;" @endif>
                                 <td>( {{ $active_table->service->name }} )</td>
                                 {{-- <td>{{ $active_table->orderItems->sum('total_cost') }}</td> --}}
-                                <td>{{ $active_table->total_price }}</td>
+                                {{-- <td>{{ $active_table->total_price }}</td> --}}
+                                <td>
+                                    {{ $active_table->total_price }}
+                                    {!! $active_table->isHasWater() ? '<span style="font-size:13px;">&#9677;</span>' : '' !!}
+                                </td>
+
                                 <td>
                                     <!-- Button trigger modal -->
                                     <button type="button" class="btn btn-sm btn-icon btn-success" title="عرض الفاتورة"
@@ -326,6 +331,7 @@
                                 <td class="text-center">
                                     @if ($active_room->orderItems->count() > 0)
                                     {{ $active_room->orderItems->sum('total_cost') }} ج
+                                    {!! $active_room->isHasWater() ? '<span style="font-size:13px;">&#9677;</span>' : '' !!}
                                     @else
                                     --
                                     @endif

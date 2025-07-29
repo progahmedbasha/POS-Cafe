@@ -69,7 +69,7 @@
                                     </div>
                                     <div class="progress-detail">
                                         <p class="mb-2">عـــدد المستخدمين </p>
-                                        <h4 class="counter">{{ $students }}</h4>
+                                        <h4 class="counter">{{ $users }}</h4>
                                     </div>
                                 </div>
                             </div>
@@ -87,7 +87,7 @@
                                     </div>
                                     <div class="progress-detail">
                                         <p class="mb-2"> عدد العملاء</p>
-                                        <h4 class="counter">{{ $groups }}</h4>
+                                        <h4 class="counter">{{ $clints }}</h4>
                                     </div>
                                 </div>
                             </div>
@@ -105,7 +105,7 @@
                                     </div>
                                     <div class="progress-detail">
                                         <p class="mb-2">المنتجـات</p>
-                                        <h4 class="counter">{{ $levels }}</h4>
+                                        <h4 class="counter">{{ $products }}</h4>
                                     </div>
                                 </div>
                             </div>
@@ -123,7 +123,7 @@
                                     </div>
                                     <div class="progress-detail">
                                         <p class="mb-2">الأوردرات</p>
-                                        <h4 class="counter">{{ $courses }}</h4>
+                                        <h4 class="counter">{{ $orders }}</h4>
                                     </div>
                                 </div>
                             </div>
@@ -140,8 +140,8 @@
                                         </svg>
                                     </div>
                                     <div class="progress-detail">
-                                        <p class="mb-2">عدد الأجهزة</p>
-                                        <h4 class="counter">{{ $classes }}</h4>
+                                        <p class="mb-2">الأصناف</p>
+                                        <h4 class="counter">{{ $categories }}</h4>
                                     </div>
                                 </div>
                             </div>

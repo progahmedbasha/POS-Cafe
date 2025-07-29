@@ -1,4 +1,13 @@
 @if($products->count() > 0)
+<div class="alert text-right d-flex justify-content-center align-items-center" style="font-size: 15px; font-weight: bold; padding: 0rem 2rem;">
+    <span>
+        إجمالي سعر الأوردر:
+        <span id="span_total_cost" class="text-primary ml-1">
+            {{ $products->sum('total_cost') }}
+        </span>
+    </span>
+</div>
+
 <table id="block-table" class="table table-striped" style="display:none;" role="grid">
     <thead>
         <tr class="light">
@@ -43,6 +52,8 @@
                 total += parseFloat($(this).text());
             });
             $('#total_price').val(total.toFixed(2));
+            $('#span_total_cost').text(parseInt(total) + ' جنيه');
+
         }
 
         // Delete item

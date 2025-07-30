@@ -18,6 +18,7 @@ class ClientSeeder extends Seeder
         DB::table('clients')->insert([
             'name' => 'نقدي',
             'phone' => '010000000',
+            'address' => 'مصر'
         ]);
     }
 }

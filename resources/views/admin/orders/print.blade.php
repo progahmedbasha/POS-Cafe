@@ -142,7 +142,8 @@
                 <br>
                 {{-- <span><i class="fa fa-instagram" aria-hidden="true"></i> ROKNA_CAFE_RK</span> --}}
                 <span>شارع شفيق البكري - متفرع من شارع بورسعيد</span>
-                <p style="text-align: center; font-size: 10px; margin-top: 10px;">
+                <hr>
+                <p style="text-align: center; font-size: 15px; margin-top: 10px;">
                     {{ $order_msg}}
                 </p>
                 <br><br>

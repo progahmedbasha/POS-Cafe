@@ -12,7 +12,7 @@ use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\TableController;
 use App\Http\Controllers\Admin\ExpensesController;
 use App\Http\Controllers\HomeController;
-
+use App\Http\Controllers\Admin\SettingController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -63,7 +63,8 @@ Route::group(
             Route::get('product-reports', [ProductController::class, 'productReports'])->name('product-reports');
             Route::get('orders_logs', [OrderController::class, 'ordersLogs'])->name('orders_logs');
             Route::get('order_log_show/{id}', [OrderController::class, 'orderLogShow'])->name('order_log_show');
-            
+            Route::get('/settings', [SettingController::class, 'index'])->name('settings');
+            Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
     }
 );
     // Route::get('/', function(){

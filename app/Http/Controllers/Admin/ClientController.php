@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreClientRequest;
 use App\Models\Client;
+use App\Models\Setting;
 
 class ClientController extends Controller
 {
@@ -14,7 +15,8 @@ class ClientController extends Controller
     public function index()
     {
         $clients = Client::withCount('orders')->paginate(config('admin.pagination'));
-        return view('admin.clients.index', compact('clients'));
+        $whats_msg = Setting::where('key', 'whatsapp_offer_message')->first()->value;
+        return view('admin.clients.index', compact('clients', 'whats_msg'));
     }
 
     /**

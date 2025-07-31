@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 // use Spatie\Activitylog\Models\Activity;
 use App\Models\Activity;
+use App\Models\Setting;
 
 class OrderController extends Controller
 {
@@ -85,8 +86,8 @@ public function create()
             return $this->printTableCaptinOrderNewItems($orderId);
         }
     }
-
-    return view('admin.orders.create', compact('products', 'clients', 'tabels', 'rooms', 'services', 'active_tables', 'active_rooms', 'order_number'));
+    $whats_msg = Setting::where('key', 'whatsapp_order_message')->first()->value;
+    return view('admin.orders.create', compact('products', 'clients', 'tabels', 'rooms', 'services', 'active_tables', 'active_rooms', 'order_number', 'whats_msg'));
 }
 
 

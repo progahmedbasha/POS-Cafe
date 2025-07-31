@@ -164,8 +164,8 @@
             $message .= "--------------------------\n";
             $message .= "💰 *الإجمالي:* $grandTotal ج\n";
         }
-
-        $message .= "شكراً لتعاملكم معنا 🤎";
+        $message .= "--------------------------\n";
+        $message .= $whats_msg;
         // تشفير الرسالة
         $encodedMessage = urlencode($message);
         $waLink = "https://wa.me/$clientPhone?text=$encodedMessage";

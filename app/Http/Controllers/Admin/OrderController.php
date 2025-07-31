@@ -87,6 +87,7 @@ public function create()
         }
     }
     $whats_msg = Setting::where('key', 'whatsapp_order_message')->first()->value;
+
     return view('admin.orders.create', compact('products', 'clients', 'tabels', 'rooms', 'services', 'active_tables', 'active_rooms', 'order_number', 'whats_msg'));
 }
 
@@ -475,13 +476,15 @@ private function calculateTotalPrice($product_ids, $quantities)
     {
         $order = Order::with('orderItems')->findOrFail($id);
         $order->update(['status' => 2]);
-        return view('admin.orders.print', compact('order'));
+        $order_msg = Setting::where('key', 'order_message')->first()->value;
+        return view('admin.orders.print', compact('order', 'order_msg'));
     }
     public function printTableReceipt($id)
     {
         $order = Order::with('orderItems')->findOrFail($id);
         $order->update(['is_printed' => 1]);
-        return view('admin.orders.print', compact('order'));
+        $order_msg = Setting::where('key', 'order_message')->first()->value;
+        return view('admin.orders.print', compact('order', 'order_msg'));
     }
     public function printTableCaptinOrder($id)
     {
@@ -508,7 +511,8 @@ private function calculateTotalPrice($product_ids, $quantities)
                 $totalPrice = $durationInSeconds ? intval(($durationInSeconds / 3600) * $price) : 0;
         $total = $totalPrice + $order->orderItems->sum('total_cost');
         $order->update(['status' => 2 , 'total_price' => $total]);
-        return view('admin.orders.print', compact('order'));
+        $order_msg = Setting::where('key', 'order_message')->first()->value;
+        return view('admin.orders.print', compact('order', 'order_msg'));
     }
     public function printRoomReciept($id)
     {
@@ -520,7 +524,8 @@ private function calculateTotalPrice($product_ids, $quantities)
         $price = $order->service->ps_price;
         $totalPrice = $durationInSeconds ? intval(($durationInSeconds / 3600) * $price) : 0;
         $total = $totalPrice + $order->orderItems->sum('total_cost');
-        return view('admin.orders.print', compact('order'));
+        $order_msg = Setting::where('key', 'order_message')->first()->value;
+        return view('admin.orders.print', compact('order', 'order_msg'));
     }
     public function updateQtyAjax (Request $request)
     {

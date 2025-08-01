@@ -15,7 +15,8 @@ input[type=button], button {
 
 
 <div class="flex justify-center">
-                    <img src="{{ asset('assets\admin\images\logo.png')}}" width="100px">
+                    <!-- <img src="{{ asset('assets\admin\images\logo.png')}}" width="100px"> -->
+                    <img src="https://scontent.fcai19-3.fna.fbcdn.net/v/t39.30808-6/454449345_122132817914308884_7008900131491947585_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=peDVIzw0V4AQ7kNvwFMb8sU&_nc_oc=Adn2FM9GaqB95riTbRiDpACYhgEjFt2t0kRgZxPt3tVjtrq-f_BPGWG_td2VHGRzCf8&_nc_zt=23&_nc_ht=scontent.fcai19-3.fna&_nc_gid=uVVC5QGbpFzeFWaaf8H3Ww&oh=00_AfR7Ev4rFhTcAZqn02E3B6wJo7ziglbOvNHHf2cdYnRFUQ&oe=6891E85D" width="100px">
                     
                 </div>
                 <center>
@@ -65,7 +66,7 @@ input[type=button], button {
                 </a>-->
             @endif
 
-            <x-primary-button class="ml-3" style="background-color: #1a95bb;">
+            <x-primary-button class="ml-3" style="background-color: rgb(234, 124, 21);">
                 تسجيل الدخول
             </x-primary-button>
         </div>

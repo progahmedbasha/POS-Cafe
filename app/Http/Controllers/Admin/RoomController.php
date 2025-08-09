@@ -76,7 +76,21 @@ class RoomController extends Controller
     public function destroy($id )
     {
         $service = Service::find($id);
+        if($service->isActive() ){
+            return redirect()->route('rooms.index')->with('error', 'يوجد أوردرات  حالية و لايمكن الحذف');
+        }
         $service->delete();
         return redirect()->route('rooms.index')->with('success', 'Deleted Successfully');
+    }
+    public function getTrashedRooms()
+    {
+        $rooms = Service::onlyTrashed()->whereType(2)->paginate(config('admin.pagination'));
+        return view('admin.rooms.trashed', compact('rooms'));
+    }
+    public function restore($id)
+    {
+        $room = Service::onlyTrashed()->find($id);
+        $room->restore();
+        return redirect()->route('rooms.index')->with('success', 'Restored Successfully');
     }
 }

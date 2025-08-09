@@ -53,6 +53,10 @@ Route::group(
             Route::resource('clients', ClientController::class);
             Route::resource('rooms', RoomController::class);
             Route::resource('tables', TableController::class);
+            Route::get('getTrashedTables', [TableController::class, 'getTrashedTables'])->name('getTrashedTables');
+            Route::get('getTrashedRooms', [RoomController::class, 'getTrashedRooms'])->name('getTrashedRooms');
+            Route::get('tables.restore/{id}', [TableController::class, 'restore'])->name('tables.restore');
+            Route::get('rooms.restore/{id}', [RoomController::class, 'restore'])->name('rooms.restore');
             Route::resource('expenses', ExpensesController::class);
             Route::patch('change_table/{order}', [OrderController::class, 'changeTable'])->name('change_table');
             Route::patch('change_room/{order}', [OrderController::class, 'changeRoom'])->name('change_room');

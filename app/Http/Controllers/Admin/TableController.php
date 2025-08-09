@@ -72,7 +72,21 @@ class TableController extends Controller
     public function destroy($id )
     {
         $service = Service::find($id);
+        if($service->isActive() ){
+            return redirect()->route('tables.index')->with('error', 'يوجد أوردرات  حالية و لايمكن الحذف');
+        }
         $service->delete();
         return redirect()->route('tables.index')->with('success', 'Deleted Successfully');
+    }
+    public function getTrashedTables()
+    {
+        $tables = Service::onlyTrashed()->whereType(1)->paginate(config('admin.pagination'));
+        return view('admin.tables.trashed', compact('tables'));
+    }
+    public function restore($id)
+    {
+        $table = Service::onlyTrashed()->find($id);
+        $table->restore();
+        return redirect()->route('tables.index')->with('success', 'Restored Successfully');
     }
 }

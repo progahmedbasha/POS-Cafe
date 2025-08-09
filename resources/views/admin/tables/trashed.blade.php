@@ -3,11 +3,11 @@
 <!-- Nav Header Component Start -->
 <x-dashboard.base.nav>
     <x-slot:heading>
-        الرومـــات
+        الطــاولات المحذوفه
         </x-slot>
         {{-- We are on a mission to help developers like you build successful projects for FREE. --}}
         <x-slot:link>
-            {{ route('rooms.create') }}
+            {{ route('tables.create') }}
             </x-slot>
 </x-dashboard.base.nav>
 <!-- Nav Header Component End -->
@@ -22,10 +22,7 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between">
                         <div class="header-title">
-                            <h4 class="card-title">الرومـــات</h4>
-                        </div>
-                        <div class="card-action">
-                            <a href="{{ route('getTrashedRooms') }}" class="btn btn-warning" title="المحذوفات">المحذوفات </a>
+                            <h4 class="card-title">الطــاولات المحذوفه</h4>
                         </div>
                     </div>
                     <div class="card-body px-0">
@@ -34,37 +31,26 @@
                                 <thead>
                                     <tr class="ligth">
                                         <th class="text-center">#</th>
-                                        <th>اسم الرووم</th>
-                                        <th>السعر</th>
-                                        <th>نوع الجهاز</th>
+                                        <th>رقم الطــاولة</th>
                                         <th style="min-width: 100px">الإعدادات</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($rooms as $index=>$room)
+                                    @foreach($tables as $index=>$table)
                                     <tr>
                                         <td class="text-center">{{ $index+1 }}</td>
-                                        <td>{{ $room->name }}</td>
-                                        <td>{{ $room->ps_price }}</td>
-                                        <td>Ps {{ $room->ps_type }}</td>
+                                        <td>{{ $table->name }}</td>
                                         <td>
                                             <div class="flex align-items-center list-user-action"
                                                 style="display: flex;">
-                                                <x-dashboard.a-edit href="{{ route('rooms.edit', $room->id) }}">
-                                                </x-dashboard.a-edit>&nbsp;
-                                                <form action="{{ route('rooms.destroy', $room->id) }}"
-                                                    method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <x-dashboard.delete-button></x-dashboard.delete-button>
-                                                </form>&nbsp;
+                                                <a href="{{ route('tables.restore', $table->id) }}" class="btn btn-success"> استعاده</a>
                                             </div>
                                         </td>
                                     </tr>
                                     @endforeach
                                 </tbody>
                             </table>
-                            {{ $rooms->links() }}
+                            {{ $tables->links() }}
                         </div>
                     </div>
                 </div>

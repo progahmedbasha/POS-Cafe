@@ -3,7 +3,7 @@
 <!-- Nav Header Component Start -->
 <x-dashboard.base.nav>
     <x-slot:heading>
-        الرومـــات
+        الرومـــات المحذوفه
         </x-slot>
         {{-- We are on a mission to help developers like you build successful projects for FREE. --}}
         <x-slot:link>
@@ -22,10 +22,7 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between">
                         <div class="header-title">
-                            <h4 class="card-title">الرومـــات</h4>
-                        </div>
-                        <div class="card-action">
-                            <a href="{{ route('getTrashedRooms') }}" class="btn btn-warning" title="المحذوفات">المحذوفات </a>
+                            <h4 class="card-title">الرومـــات المحذوفه</h4>
                         </div>
                     </div>
                     <div class="card-body px-0">
@@ -50,14 +47,10 @@
                                         <td>
                                             <div class="flex align-items-center list-user-action"
                                                 style="display: flex;">
-                                                <x-dashboard.a-edit href="{{ route('rooms.edit', $room->id) }}">
-                                                </x-dashboard.a-edit>&nbsp;
-                                                <form action="{{ route('rooms.destroy', $room->id) }}"
-                                                    method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <x-dashboard.delete-button></x-dashboard.delete-button>
-                                                </form>&nbsp;
+                                                <div class="flex align-items-center list-user-action"
+                                                style="display: flex;">
+                                                <a href="{{ route('rooms.restore', $room->id) }}" class="btn btn-success"> استعاده</a>
+                                            </div>
                                             </div>
                                         </td>
                                     </tr>

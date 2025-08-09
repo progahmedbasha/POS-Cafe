@@ -24,6 +24,9 @@
                         <div class="header-title">
                             <h4 class="card-title">الطــاولات</h4>
                         </div>
+                        <div class="card-action">
+                            <a href="{{ route('getTrashedTables') }}" class="btn btn-warning" title="المحذوفات">المحذوفات </a>
+                        </div>
                     </div>
                     <div class="card-body px-0">
                         <div class="table-responsive">

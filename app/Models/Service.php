@@ -16,4 +16,8 @@ class Service extends Model
     {
         return $this->hasMany(Order::class);
     }
+    public function isActive()
+    {
+        return Order::where('service_id', $this->id)->where('status', 1)->exists();
+    }
 }

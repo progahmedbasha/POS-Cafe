@@ -45,7 +45,7 @@
                                         <td>{{ $expense->shift->getType() }} - {{ $expense->user->name }}</td>
                                         <td>{{ $expense->price }}</td>
                                         <td>{{ $expense->note ? $expense->note : '' }}</td>
-                                        <td> {{ $expenses->create_at }} </td>
+                                        <td> {{ $expense->created_at }} </td>
                                         <td>
                                             <div class="flex align-items-center list-user-action"
                                                 style="display: flex;">

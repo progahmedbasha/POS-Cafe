@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreOrderRequest;
+use App\Models\Activity;
 use App\Models\Client;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -11,14 +12,13 @@ use App\Models\OrderSale;
 use App\Models\OrderTime;
 use App\Models\Product;
 use App\Models\Service;
+use App\Models\Setting;
 use App\Models\Shift;
 use Carbon\Carbon;
 use DB;
+// use Spatie\Activitylog\Models\Activity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-// use Spatie\Activitylog\Models\Activity;
-use App\Models\Activity;
-use App\Models\Setting;
 
 class OrderController extends Controller
 {
@@ -403,7 +403,7 @@ private function calculateTotalPrice($product_ids, $quantities)
 
         try {
             $order_room = OrderTime::where('order_id', $id)->first();
-            $endTime = now()->tz('Africa/Cairo');
+            $endTime = now(); // UTC
             $order_room->update(['end_time' => $endTime]);
 
             // Calculate the play time price
@@ -648,4 +648,14 @@ private function calculateTotalPrice($product_ids, $quantities)
                ->get();
         return view('admin.orders.logs.show', compact('logs'));
     }
+    public function saveDiscount(Request $request)
+    {
+        $order = Order::findOrFail($request->order_id);
+        $order->discount_type = $request->discount_type;
+        $order->total_price = $request->final_total;
+        $order->discount = $request->discount_value;
+        $order->save();
+        return response()->json(['saved' => true]);
+    }
+
 }

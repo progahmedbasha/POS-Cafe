@@ -10,13 +10,33 @@
 <!-- Nav Header Component End -->
 <!--Nav End-->
 </div>
+
+<style>
+    .stat-card{
+    background: #fafafa;
+    padding: 16px 18px;
+    border-radius: 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    }
+
+    .stat-title{
+        font-size: 13px;
+        color: #777;
+        margin-bottom: 6px;
+    }
+
+    .stat-value{
+        font-size: 26px;
+        font-weight: 700;
+    }
+</style>
 {{-- content --}}
 <div class="conatiner-fluid content-inner mt-n5 py-0">
     <div>
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between">
+                    {{-- <div class="card-header d-flex justify-content-between">
                         <div class="header-title">
                             <h4 class="card-title"> المبيعات ({{ $sum }}) </h4>
                         </div>
@@ -37,7 +57,66 @@
                         <div class="header-title">
                             <h4 class="card-title"> عدد الفواتير ({{ $count }}) </h4>
                         </div>
+                    </div> --}}
+
+                    <div class="card-header bg-white">
+                        <div class="row g-3">
+
+                            <!-- المبيعات -->
+                            <div class="col-12 col-sm-6 col-lg-4">
+                                <div class="stat-card border-start border-4 border-primary">
+                                    <div class="stat-title">المبيعات</div>
+                                    <div class="stat-value text-primary">{{ number_format($sum) }}</div>
+                                </div>
+                            </div>
+
+                            @if ($expenses !== 0)
+                                <!-- المصروفات -->
+                                <div class="col-12 col-sm-6 col-lg-4">
+                                    <div class="stat-card border-start border-4 border-danger">
+                                        <div class="stat-title">المصروفات</div>
+                                        <div class="stat-value text-danger">{{ number_format($expenses) }}</div>
+                                    </div>
+                                </div>
+
+                                <!-- الصافي -->
+                                <div class="col-12 col-sm-6 col-lg-4">
+                                    <div class="stat-card border-start border-4 border-success">
+                                        <div class="stat-title">الصافي</div>
+                                        <div class="stat-value text-success">
+                                            {{ number_format($sum - $expenses) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- استلام -->
+                            <div class="col-12 col-sm-6 col-lg-4">
+                                <div class="stat-card border-start border-4 border-secondary">
+                                    <div class="stat-title">استلام</div>
+                                    <div class="stat-value">{{ number_format($shift?->start_cash ?? 0) }}</div>
+                                </div>
+                            </div>
+
+                            <!-- تسليم -->
+                            <div class="col-12 col-sm-6 col-lg-4">
+                                <div class="stat-card border-start border-4 border-secondary">
+                                    <div class="stat-title">تسليم</div>
+                                    <div class="stat-value">{{ number_format($shift?->end_cash ?? 0) }}</div>
+                                </div>
+                            </div>
+
+                            <!-- عدد الفواتير -->
+                            <div class="col-12 col-sm-6 col-lg-4">
+                                <div class="stat-card border-start border-4 border-dark">
+                                    <div class="stat-title">عدد الفواتير</div>
+                                    <div class="stat-value">{{ $count }}</div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
+
                     <div class="card-body px-0">
                         @php
                         $today = date('Y-m-d');
@@ -45,11 +124,34 @@
                         <form action="{{ route('invoices.index') }}" method="get" style="padding: 20px;">
                             @csrf
                             <div class="row">
-                                <div class="col">
+                                {{-- <div class="col">
                                     <label class="form-label">عرض من تاريخ</label>
                                     <input type="date" class="form-control" name="from"
                                         value="{{ request('from', $today) }}">
+                                </div> --}}
+                                <div class="col">
+                                    <label class="form-label">عرض من تاريخ</label>
+
+                                    @if(auth()->user()->type_id == 2)
+                                        {{-- هذا الكود سيتم تنفيذه فقط إذا كان نوع المستخدم هو 2 --}}
+                                        @php
+                                            // حساب تاريخ الأمس
+                                            $yesterday = \Carbon\Carbon::yesterday()->toDateString();
+                                        @endphp
+                                        <input type="date" 
+                                            class="form-control" 
+                                            name="from"
+                                            value="{{ request('from', $yesterday) }}"
+                                            min="{{ $yesterday }}">
+                                    @else
+                                        {{-- هذا هو الكود الافتراضي للمستخدمين الآخرين --}}
+                                        <input type="date" 
+                                            class="form-control" 
+                                            name="from"
+                                            value="{{ request('from', $today) }}">
+                                    @endif
                                 </div>
+
                                 <div class="col">
                                     <label class="form-label">الي تاريخ</label>
                                     <input type="date" class="form-control" name="to"

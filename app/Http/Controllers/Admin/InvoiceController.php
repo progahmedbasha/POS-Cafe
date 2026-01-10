@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use DB;
-use App\Models\User;
+use App\Http\Controllers\Controller;
+use App\Models\Expense;
 use App\Models\Order;
 use App\Models\Shift;
-use App\Models\Expense;
+use App\Models\User;
+use DB;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
 class InvoiceController extends Controller
 {
@@ -42,7 +42,14 @@ class InvoiceController extends Controller
     {
         $invoices = Order::with('user');
         $users = User::all();
-        $shifts = Shift::take(3)->orderBy('id', 'desc')->get();
+        // $shifts = Shift::take(3)->orderBy('id', 'desc')->get();
+        if (auth()->user()->type_id == 2) {
+            // إذا كان المستخدم من النوع 2، احضر الوردية الحالية فقط
+            $shifts = Shift::where('status', 1)->get();
+        } else {
+            // للمستخدمين الآخرين، احضر كل الورديات
+            $shifts = Shift::take(3)->orderBy('id', 'desc')->get();
+        }
         $expenses = 0;
 
         // Apply filters based on request parameters

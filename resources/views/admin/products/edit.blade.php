@@ -46,7 +46,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label" for="email"> الكمية :</label>
-                                            <input type="text" class="form-control" placeholder="الاسم" name="qty"
+                                            <input type="text" class="form-control" placeholder="الكمية" name="qty"
                                                 value="{{ $product->qty }}" required />
                                             @error('qty')
                                             <div class="alert alert-danger">{{ $message }}</div>
@@ -54,8 +54,27 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label" for="email">السعر :</label>
-                                            <input type="text" class="form-control" placeholder="الاسم" name="price"
-                                                value="{{ $product->price }}" required />
+                                            {{-- <input type="text" class="form-control" placeholder="السعر" name="price"
+                                                value="{{ $product->price }}" required /> --}}
+                                                @if(auth()->user()->type_id == 2)
+                                                    <input type="text" 
+                                                        class="form-control" 
+                                                        placeholder="السعر" 
+                                                        name="price_display" {{-- اسم مؤقت، لن يتم إرساله --}}
+                                                        value="{{ $product->price }}" 
+                                                        disabled {{-- تعطيل الحقل --}}
+                                                    />
+                                                    {{-- 2. الحقل المخفي الذي سيتم إرساله بالفعل --}}
+                                                    <input type="hidden" name="price" value="{{ $product->price }}" />
+                                                @else
+                                                    <input type="text" 
+                                                        class="form-control" 
+                                                        placeholder="السعر" 
+                                                        name="price" {{-- الاسم الصحيح الذي يتوقعه الـ Controller --}}
+                                                        value="{{ $product->price }}" 
+                                                        required 
+                                                    />
+                                                @endif
                                             @error('price')
                                             <div class="alert alert-danger">{{ $message }}</div>
                                             @enderror

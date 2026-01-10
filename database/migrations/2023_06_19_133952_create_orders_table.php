@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedInteger('client_id')->unsigned()->nullable();
             $table->unsignedInteger('service_id')->unsigned();
             $table->unsignedSmallInteger('discount')->nullable();
+            $table->enum('discount_type', ['fixed', 'percent'])->nullable();
             $table->unsignedSmallInteger('total_price')->default(0);
             $table->timestamp('start_time')->nullable();
             $table->timestamp('end_time')->nullable();

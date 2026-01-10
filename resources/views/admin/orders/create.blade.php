@@ -337,13 +337,33 @@
                                     @endif
                                 </td>
                                 {{-- total --}}
-                                @if ($active_room->orderItems->count() > 0 && $active_room->orderTimes[0]->end_time !=
-                                null)
-                                <td>{{ $active_room->orderTimes[0]->total_price + $active_room->orderItems->sum('total_cost')}}
-                                    ج</td>
+                                @if ($active_room->orderItems->count() > 0 && $active_room->orderTimes[0]->end_time != null)
+                                    @php
+                                        $timePrice   = $active_room->orderTimes[0]->total_price ?? 0;
+                                        $drinksPrice = $active_room->orderItems->sum('total_cost');
+                                        $total       = $timePrice + $drinksPrice;
+
+                                        $discount_type  = $active_room->discount_type ?? null; // نوع الخصم
+                                        $discount_value = $active_room->discount ?? 0;         // قيمة الخصم المدخلة
+
+                                        if ($discount_type === 'percent') {
+                                            $discountAmount = ($total * $discount_value) / 100;
+                                        } elseif ($discount_type === 'fixed') {
+                                            $discountAmount = $discount_value;
+                                        } else {
+                                            $discountAmount = 0;
+                                        }
+
+                                        if ($discountAmount > $total) $discountAmount = $total;
+
+                                        $finalTotal = $total - $discountAmount;
+                                    @endphp
+
+                                    <td>{{ $finalTotal }} ج</td>
                                 @else
-                                <td>--</td>
+                                    <td>--</td>
                                 @endif
+
                                 <td>
                                     {{--
                                  <x-dashboard.a-show href="{{ route('orders.show', $active_room->id) }}"

@@ -105,6 +105,9 @@
                     @endif
                 </h6>
                 <hr>
+                @include('admin.orders.discount-section-room')
+                {{-- <hr> --}}
+
                 <div style="background-color: blanchedalmond;">
                     <form action="{{route('orders.store')}}" method="post" enctype="multipart/form-data">
                         @csrf

@@ -121,13 +121,58 @@
                     الخصم</span>
                 @endif
                 <br>
-                <span style="float:left;">{{ isset($order->discount) ? $order->discount : '0' }} ج </span><span
-                    style="float:right;">اجمالي الخصم</span>
+                {{-- <span style="float:left;">{{ isset($order->discount) ? $order->discount : '0' }} ج </span><span
+                    style="float:right;">اجمالي الخصم</span> --}}
+                @php
+                    $total = ($order->orderTimes[0]->total_price ?? 0) + $order->orderItems->sum('total_cost');
+
+                    $discount_type  = $order->discount_type ?? null; // النوع
+                    $discount_value = $order->discount ?? 0;         // القيمة المدخلة
+
+                    if ($discount_type === 'percent') {
+                        $discountAmount = ($total * $discount_value) / 100;
+                    } elseif ($discount_type === 'fixed') {
+                        $discountAmount = $discount_value;
+                    } else {
+                        $discountAmount = 0;
+                    }
+
+                    if ($discountAmount > $total) $discountAmount = $total;
+                @endphp
+
+                <span style="float:left;">{{ $discountAmount }} ج</span>
+                <span style="float:right;">اجمالي الخصم</span>
+
                 <br>
                 <hr>
                 @if (isset($order->orderTimes[0]) && $order->orderTimes[0]->end_time != null)
-                <span style="float:left;">{{$order->orderTimes[0]->total_price + $order->orderItems->sum('total_cost') - $order->discount}} ج</span><span
-                    style="float:right;">الاجمالي النهائي</span>
+                {{-- <span style="float:left;">{{$order->orderTimes[0]->total_price + $order->orderItems->sum('total_cost') - $order->discount}} ج</span><span
+                    style="float:right;">الاجمالي النهائي</span> --}}
+                    @php
+                        $timePrice   = $order->orderTimes[0]->total_price ?? 0;
+                        $drinksPrice = $order->orderItems->sum('total_cost');
+                        $total       = $timePrice + $drinksPrice;
+
+                        $discount_type  = $order->discount_type ?? null; // نوع الخصم
+                        $discount_value = $order->discount ?? 0;         // القيمة المدخلة
+
+                        // حساب الخصم حسب النوع
+                        if ($discount_type === 'percent') {
+                            $discountAmount = ($total * $discount_value) / 100;
+                        } elseif ($discount_type === 'fixed') {
+                            $discountAmount = $discount_value;
+                        } else {
+                            $discountAmount = 0;
+                        }
+
+                        if ($discountAmount > $total) $discountAmount = $total;
+
+                        $finalTotal = $total - $discountAmount;
+                    @endphp
+
+                    <span style="float:left;">{{ $finalTotal }} ج</span>
+                    <span style="float:right;">الاجمالي النهائي</span>
+
                 @else
                 <span style="float:left;">{{ $order->orderItems->sum('total_cost') - $order->discount }} ج</span><span
                     style="float:right;">الاجمالي النهائي</span>

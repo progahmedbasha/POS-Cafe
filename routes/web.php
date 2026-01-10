@@ -1,18 +1,18 @@
 <?php
 
+use App\Http\Controllers\Admin\ClientController;
+use App\Http\Controllers\Admin\ExpensesController;
+use App\Http\Controllers\Admin\InvoiceController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\ShiftController;
+use App\Http\Controllers\Admin\TableController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\ShiftController;
-use App\Http\Controllers\Admin\OrderController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Admin\InvoiceController;
-use App\Http\Controllers\Admin\ClientController;
-use App\Http\Controllers\Admin\RoomController;
-use App\Http\Controllers\Admin\TableController;
-use App\Http\Controllers\Admin\ExpensesController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Admin\SettingController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -69,6 +69,7 @@ Route::group(
             Route::get('order_log_show/{id}', [OrderController::class, 'orderLogShow'])->name('order_log_show');
             Route::get('/settings', [SettingController::class, 'index'])->name('settings');
             Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+            Route::post('saveDiscount', [OrderController::class, 'saveDiscount'])->name('orders.saveDiscount');
     }
 );
     // Route::get('/', function(){

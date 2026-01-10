@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\ExpensesController;
 use App\Http\Controllers\Admin\InvoiceController;
@@ -70,6 +71,7 @@ Route::group(
             Route::get('/settings', [SettingController::class, 'index'])->name('settings');
             Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
             Route::post('saveDiscount', [OrderController::class, 'saveDiscount'])->name('orders.saveDiscount');
+            Route::resource('admins', AdminController::class);
     }
 );
     // Route::get('/', function(){

@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 use App\Models\Order;
-use Spatie\Activitylog\Models\Activity;
+use App\Models\Shift;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Spatie\Activitylog\Models\Activity;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -34,5 +36,9 @@ class AppServiceProvider extends ServiceProvider
         //         ])
         //         ->log('تم حذف الطلب');
         // });
+        View::composer(['admin.layouts.sidebar'], function($view) {
+            $isActiveShift = Shift::where('status', 1)->first();
+            $view->with('isActiveShift', $isActiveShift);
+        });
     }
 }

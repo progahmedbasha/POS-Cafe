@@ -13,11 +13,38 @@ class ExpensesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    // public function index()
+    // {
+    //     $expenses = Expense::paginate(config('admin.pagination'));
+    //     return view('admin.expenses.index', compact('expenses'));
+    // }
+    public function index(Request $request)
     {
-        $expenses = Expense::paginate(config('admin.pagination'));
-        return view('admin.expenses.index', compact('expenses'));
+        $query = Expense::with(['shift','user']);
+
+        // فلترة من تاريخ
+        if ($request->filled('from_date')) {
+            $query->whereDate('created_at', '>=', $request->from_date);
+        }
+
+        // فلترة إلى تاريخ
+        if ($request->filled('to_date')) {
+            $query->whereDate('created_at', '<=', $request->to_date);
+        }
+
+        // فلترة بالوردية
+        if ($request->filled('shift_id')) {
+            $query->where('shift_id', $request->shift_id);
+        }
+
+        $expenses = $query->latest()->paginate(config('admin.pagination'))
+            ->appends($request->query());
+
+        $shifts = Shift::where('status', 1)->get();
+
+        return view('admin.expenses.index', compact('expenses', 'shifts'));
     }
+
 
     /**
      * Show the form for creating a new resource.
